@@ -1,0 +1,167 @@
+{
+  "title": "Mock Exam 1 — AWS DEA-C01",
+  "time_minutes": 170,
+  "questions": [
+    {
+      "id": "e1q1",
+      "domain": 1,
+      "topic": "Streaming Ingestion",
+      "difficulty": "Medium",
+      "type": "single",
+      "text": "A company collects clickstream data from its website at a rate of 50,000 events per second. The data must be delivered to Amazon S3 in near real-time for batch analytics. The solution should require minimal operational overhead. Which service should the data engineer use?",
+      "options": [
+        "Amazon Kinesis Data Streams with a custom consumer writing to S3",
+        "Amazon Kinesis Data Firehose with S3 as the destination",
+        "Amazon MSK with a Kafka Connect S3 sink connector",
+        "AWS Lambda triggered by API Gateway writing directly to S3"
+      ],
+      "correct": ["B"],
+      "explanation": "Firehose is the managed delivery service for streaming data to S3. It requires zero administration and handles buffering, batching, compression, and encryption automatically. A works but requires managing a custom consumer. C works but MSK + Kafka Connect is more complex. D has concurrency limits."
+    },
+    {
+      "id": "e1q2",
+      "domain": 2,
+      "topic": "Storage Selection",
+      "difficulty": "Easy",
+      "type": "single",
+      "text": "A data engineer needs to store 10 TB of historical log data that will be queried approximately once per month using Amazon Athena. The data must be retained for 7 years for compliance. Which S3 storage class is most cost-effective?",
+      "options": [
+        "S3 Standard",
+        "S3 Standard-Infrequent Access",
+        "S3 Glacier Flexible Retrieval",
+        "S3 Intelligent-Tiering"
+      ],
+      "correct": ["B"],
+      "explanation": "Standard-IA is cheaper than Standard for infrequent access but data is immediately available for Athena queries. Glacier requires retrieval time (minutes to hours) which doesn't work for Athena. Intelligent-Tiering adds monitoring costs not justified for a known access pattern."
+    },
+    {
+      "id": "e1q3",
+      "domain": 1,
+      "topic": "ETL",
+      "difficulty": "Medium",
+      "type": "single",
+      "text": "A data engineer runs a daily AWS Glue ETL job that processes new files from an S3 bucket. The job currently reprocesses all files every run, causing increased costs and processing time. What should the engineer enable to process only new files?",
+      "options": [
+        "Glue crawlers with a daily schedule",
+        "Glue job bookmarks",
+        "S3 event notifications with Lambda",
+        "Glue DataBrew profiling jobs"
+      ],
+      "correct": ["B"],
+      "explanation": "Job bookmarks track which data has been processed, enabling incremental processing. On each run, the job only processes new files. Crawlers discover schemas, not control processing. Lambda + S3 events adds complexity. DataBrew is for data preparation."
+    },
+    {
+      "id": "e1q4",
+      "domain": 4,
+      "topic": "Security",
+      "difficulty": "Medium",
+      "type": "single",
+      "text": "A company requires that all data stored in Amazon S3 be encrypted at rest using keys that the company can audit and rotate. The solution must log every time a key is used to decrypt data. Which encryption option meets these requirements?",
+      "options": [
+        "SSE-S3",
+        "SSE-KMS with an AWS managed key",
+        "SSE-KMS with a customer managed key",
+        "SSE-C"
+      ],
+      "correct": ["C"],
+      "explanation": "Customer managed KMS keys give full control over key rotation and key policies. CloudTrail automatically logs every KMS API call (Decrypt, Encrypt), providing the audit trail. SSE-S3 doesn't provide audit logging. AWS managed keys don't allow custom key policies. SSE-C requires managing keys yourself."
+    },
+    {
+      "id": "e1q5",
+      "domain": 3,
+      "topic": "Orchestration",
+      "difficulty": "Medium",
+      "type": "single",
+      "text": "A data engineer needs to orchestrate a pipeline that runs a Glue crawler, then a Glue ETL job, then a data quality check, and finally sends a notification. If any step fails, the pipeline should retry twice before sending an alert. Which service is best suited?",
+      "options": [
+        "Amazon EventBridge with scheduled rules",
+        "AWS Step Functions with retry and catch blocks",
+        "AWS Lambda with recursive invocations",
+        "Amazon MWAA (Managed Airflow)"
+      ],
+      "correct": ["B"],
+      "explanation": "Step Functions provides built-in retry with configurable attempts, backoff, and catch blocks for error handling. EventBridge can trigger jobs but doesn't orchestrate sequential steps with retry logic. Recursive Lambda is an anti-pattern. MWAA is overkill for this simple pipeline."
+    },
+    {
+      "id": "e1q6",
+      "domain": 1,
+      "topic": "Data Transformation",
+      "difficulty": "Easy",
+      "type": "single",
+      "text": "A data engineer needs to convert a large collection of JSON files in S3 to Parquet format for improved query performance in Athena. The transformation should be repeatable and serverless. Which approach is most appropriate?",
+      "options": [
+        "Use Athena CTAS (CREATE TABLE AS SELECT) to create a new Parquet table",
+        "Use Amazon Redshift COPY to load JSON and UNLOAD as Parquet",
+        "Write a custom EC2 application to convert files",
+        "Use S3 Batch Operations to convert file formats"
+      ],
+      "correct": ["A"],
+      "explanation": "CTAS creates a new table from a SELECT query, allowing format conversion (JSON to Parquet) with partitioning in a single serverless operation. Loading into Redshift just to convert format is wasteful. Custom EC2 is unnecessary overhead. S3 Batch Operations doesn't convert formats."
+    },
+    {
+      "id": "e1q7",
+      "domain": 2,
+      "topic": "Data Warehouse",
+      "difficulty": "Hard",
+      "type": "single",
+      "text": "A data engineer is designing a star schema in Amazon Redshift. The fact table has 5 billion rows and is frequently joined with a dimension table containing 500 rows. Which distribution strategy should be used for the dimension table?",
+      "options": [
+        "KEY distribution on the join column",
+        "EVEN distribution",
+        "ALL distribution",
+        "AUTO distribution"
+      ],
+      "correct": ["C"],
+      "explanation": "A 500-row dimension table should use ALL distribution, which copies the entire table to every node. This eliminates data redistribution during joins with the large fact table. KEY distribution on a small table wastes resources. EVEN distribution would require redistribution during joins."
+    },
+    {
+      "id": "e1q8",
+      "domain": 4,
+      "topic": "Governance",
+      "difficulty": "Medium",
+      "type": "single",
+      "text": "A company has a data lake on S3 with hundreds of tables in the Glue Data Catalog. Different teams need access to different columns based on their role. Some columns contain PII that only the compliance team should see. Which service provides the most efficient solution?",
+      "options": [
+        "S3 bucket policies with prefix-based access",
+        "IAM policies with condition keys for specific columns",
+        "AWS Lake Formation with data filters",
+        "Amazon Macie for PII detection and access control"
+      ],
+      "correct": ["C"],
+      "explanation": "Lake Formation data filters provide column-level and row-level security on Glue Data Catalog tables. S3 bucket policies can't control column-level access. IAM doesn't support column-level access to data. Macie detects PII but doesn't control access."
+    },
+    {
+      "id": "e1q9",
+      "domain": 1,
+      "topic": "Streaming",
+      "difficulty": "Hard",
+      "type": "single",
+      "text": "A data engineer has a Kinesis Data Stream with 10 shards. Three different consumer applications need to read from the stream simultaneously. Each consumer is experiencing ReadProvisionedThroughputExceeded errors. What should the engineer do?",
+      "options": [
+        "Increase the number of shards to 30",
+        "Enable enhanced fan-out for each consumer",
+        "Switch to Kinesis Data Firehose",
+        "Increase the data retention period"
+      ],
+      "correct": ["B"],
+      "explanation": "With 3 consumers sharing 10 shards, each shard's 2 MB/s read throughput is split among consumers. Enhanced fan-out provides dedicated 2 MB/s per consumer per shard, eliminating throttling. Adding shards increases cost and doesn't solve per-shard consumer contention."
+    },
+    {
+      "id": "e1q10",
+      "domain": 3,
+      "topic": "Monitoring",
+      "difficulty": "Medium",
+      "type": "single",
+      "text": "A data engineer wants to be notified when an AWS Glue ETL job fails. The notification should include the job name and error message. Which approach requires the least operational overhead?",
+      "options": [
+        "Configure CloudWatch Logs and create a metric filter for errors",
+        "Create an EventBridge rule that matches Glue job state change events and targets an SNS topic",
+        "Add error handling code in the Glue job script to send SNS notifications",
+        "Create a CloudWatch alarm on the Glue job duration metric"
+      ],
+      "correct": ["B"],
+      "explanation": "EventBridge natively captures Glue job state change events (including failures) and can route them to SNS with the job name and error details. Zero custom code needed. Metric filters require more setup. Adding code to the Glue job is more maintenance."
+    }
+  ]
+}
+

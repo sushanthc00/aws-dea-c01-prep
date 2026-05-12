@@ -1,0 +1,166 @@
+{
+  "title": "Mock Exam 2 — AWS DEA-C01",
+  "time_minutes": 170,
+  "questions": [
+    {
+      "id": "e2q1",
+      "domain": 1,
+      "topic": "Ingestion",
+      "difficulty": "Medium",
+      "type": "single",
+      "text": "A company receives 10 GB of JSON log files every hour from application servers. The data must be transformed to Parquet and stored in S3 partitioned by date. The solution should be fully managed and serverless. Which approach is best?",
+      "options": [
+        "Kinesis Data Firehose with format conversion enabled",
+        "AWS Glue ETL job triggered by an EventBridge schedule",
+        "Lambda function triggered by S3 event notifications",
+        "EMR Serverless with a scheduled Spark job"
+      ],
+      "correct": ["A"],
+      "explanation": "Firehose supports automatic format conversion from JSON to Parquet using the Glue Data Catalog schema. It's fully managed and serverless. Glue ETL works but requires scheduling and isn't real-time. Lambda has size/time limits. EMR is overkill."
+    },
+    {
+      "id": "e2q2",
+      "domain": 2,
+      "topic": "Storage",
+      "difficulty": "Medium",
+      "type": "single",
+      "text": "A data engineer stores 500 TB of data in S3. Access patterns vary: some data is accessed daily, some weekly, and some hasn't been accessed in over a year. The engineer wants to minimize storage costs without manually managing data movement. Which solution is best?",
+      "options": [
+        "Create lifecycle rules to transition data through storage classes on a fixed schedule",
+        "Use S3 Intelligent-Tiering",
+        "Move all data to S3 Glacier",
+        "Use S3 Standard for all data"
+      ],
+      "correct": ["B"],
+      "explanation": "Intelligent-Tiering automatically moves objects between access tiers based on actual access patterns. No manual management needed. Fixed schedules may not match actual access patterns. Glacier makes frequently accessed data unavailable."
+    },
+    {
+      "id": "e2q3",
+      "domain": 1,
+      "topic": "Streaming",
+      "difficulty": "Hard",
+      "type": "single",
+      "text": "A data engineer has a Kinesis Data Stream with on-demand capacity mode. The stream receives variable traffic — 1,000 records/sec during off-peak and 100,000 records/sec during peak. A Lambda consumer processes the records. During peak times, the Lambda function falls behind. What should the engineer do?",
+      "options": [
+        "Switch to provisioned mode with more shards",
+        "Increase the Lambda function's batch size and parallelization factor",
+        "Add a Kinesis Data Firehose delivery stream between the stream and Lambda",
+        "Increase the Lambda function's memory allocation"
+      ],
+      "correct": ["B"],
+      "explanation": "Lambda's parallelization factor (up to 10) allows multiple Lambda invocations per shard, increasing throughput. Larger batch sizes reduce invocation overhead. On-demand mode already auto-scales shards. Firehose doesn't help Lambda processing."
+    },
+    {
+      "id": "e2q4",
+      "domain": 4,
+      "topic": "Security",
+      "difficulty": "Medium",
+      "type": "single",
+      "text": "A data engineer needs to grant temporary access to an S3 bucket for a third-party auditor. The access should expire after 24 hours and be limited to read-only operations on a specific prefix. Which approach is most secure?",
+      "options": [
+        "Create an IAM user with access keys and delete the user after 24 hours",
+        "Generate a pre-signed URL for each object the auditor needs",
+        "Create an IAM role with a trust policy for the auditor's AWS account and a session duration of 24 hours",
+        "Make the S3 prefix publicly readable and remove access after 24 hours"
+      ],
+      "correct": ["C"],
+      "explanation": "An IAM role with a trust policy provides temporary, scoped access. Session duration limits the access window. IAM users with access keys are long-term credentials (security risk). Pre-signed URLs work but are impractical for many objects. Public access is never acceptable."
+    },
+    {
+      "id": "e2q5",
+      "domain": 3,
+      "topic": "Orchestration",
+      "difficulty": "Medium",
+      "type": "single",
+      "text": "A data pipeline has three independent ETL jobs that can run in parallel, followed by a final aggregation job that depends on all three completing successfully. Which Step Functions pattern implements this?",
+      "options": [
+        "Sequential Task states for all four jobs",
+        "A Parallel state containing three Task states, followed by a Task state for the aggregation job",
+        "A Map state processing the three jobs, followed by a Task state",
+        "A Choice state that routes to each job based on conditions"
+      ],
+      "correct": ["B"],
+      "explanation": "The Parallel state runs all three ETL jobs concurrently. When all complete, the subsequent Task state runs the aggregation. Sequential is slower. Map state is for processing arrays of items. Choice is for conditional branching."
+    },
+    {
+      "id": "e2q6",
+      "domain": 1,
+      "topic": "ETL",
+      "difficulty": "Medium",
+      "type": "single",
+      "text": "A Glue ETL job reads from a JDBC source (MySQL) and writes to S3. The source table has 500 million rows. The job is slow because it reads the entire table through a single JDBC connection. How can the engineer improve performance?",
+      "options": [
+        "Enable Glue job bookmarks",
+        "Use hashfield or hashexpression to parallelize the JDBC read",
+        "Increase the Glue job timeout",
+        "Switch to a Glue Python Shell job"
+      ],
+      "correct": ["B"],
+      "explanation": "Glue supports partitioning JDBC reads using hashfield or hashexpression, which splits the read across multiple Spark partitions for parallel extraction. Bookmarks help incremental processing, not parallelism. Timeout doesn't improve speed."
+    },
+    {
+      "id": "e2q7",
+      "domain": 2,
+      "topic": "Redshift",
+      "difficulty": "Medium",
+      "type": "single",
+      "text": "A data engineer needs to load data from S3 into Redshift. The S3 data is split into 16 files of equal size. The Redshift cluster has 4 compute nodes. What is the optimal number of files for the COPY command?",
+      "options": [
+        "1 large file",
+        "4 files (one per node)",
+        "16 files (or a multiple of 4)",
+        "100 small files"
+      ],
+      "correct": ["C"],
+      "explanation": "COPY performs best when the number of files is a multiple of the number of slices (nodes x slices per node). 16 files for 4 nodes allows even distribution. Single file can't be parallelized. 100 small files add overhead."
+    },
+    {
+      "id": "e2q8",
+      "domain": 4,
+      "topic": "Governance",
+      "difficulty": "Hard",
+      "type": "single",
+      "text": "A company uses Lake Formation for data governance. A new requirement states that the marketing team should only see rows where region = 'US' in the customer table. Which Lake Formation feature implements this?",
+      "options": [
+        "Column-level permissions",
+        "Data filters with row-level security",
+        "Tag-based access control (LF-TBAC)",
+        "Lake Formation blueprints"
+      ],
+      "correct": ["B"],
+      "explanation": "Lake Formation data filters support row-level security, allowing you to restrict rows based on column values. Column-level permissions hide columns, not rows. LF-TBAC is for tag-based access, not row filtering. Blueprints are for data ingestion."
+    },
+    {
+      "id": "e2q9",
+      "domain": 1,
+      "topic": "Streaming",
+      "difficulty": "Medium",
+      "type": "single",
+      "text": "A data engineer needs to deliver streaming data from Kinesis Data Streams to Amazon Redshift in near real-time. Which is the recommended approach?",
+      "options": [
+        "Kinesis Data Firehose with Redshift as the destination",
+        "Lambda consumer that writes to Redshift via JDBC",
+        "Kinesis Data Analytics writing directly to Redshift",
+        "Glue Streaming ETL writing to Redshift"
+      ],
+      "correct": ["A"],
+      "explanation": "Firehose natively supports Redshift as a destination. It stages data in S3 and uses COPY to load into Redshift. Lambda + JDBC is slow and doesn't scale. KDA doesn't write directly to Redshift. Glue Streaming to Redshift adds complexity."
+    },
+    {
+      "id": "e2q10",
+      "domain": 3,
+      "topic": "Monitoring",
+      "difficulty": "Easy",
+      "type": "single",
+      "text": "A data engineer wants to query and analyze CloudWatch Logs from multiple Glue ETL jobs to identify common error patterns. Which CloudWatch feature is best for this?",
+      "options": [
+        "CloudWatch Metrics",
+        "CloudWatch Alarms",
+        "CloudWatch Logs Insights",
+        "CloudWatch Dashboards"
+      ],
+      "correct": ["C"],
+      "explanation": "Logs Insights provides a SQL-like query language to search and analyze log data across multiple log groups. Perfect for finding error patterns. Metrics are numerical, not log analysis. Alarms trigger on thresholds. Dashboards visualize metrics."
+    }
+  ]
+}

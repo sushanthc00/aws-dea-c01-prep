@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ exam.title }} — Exam</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="exam-container">
+        <!-- Top Bar -->
+        <div class="exam-topbar">
+            <div class="exam-title">{{ exam.title }}</div>
+            <div class="exam-timer" id="timer">170:00</div>
+            <div class="exam-progress">
+                <span id="answered-count">0</span> / <span id="total-count">65</span> answered
+            </div>
+            <button class="btn btn-danger" id="submit-btn" onclick="submitExam()">Submit Exam</button>
+        </div>
+
+        <!-- Main Content -->
+        <div class="exam-body">
+            <!-- Question Panel -->
+            <div class="question-panel" id="question-panel">
+                <div class="question-header">
+                    <span class="question-number" id="question-number">Question 1 of 65</span>
+                    <span class="question-meta" id="question-meta">Domain 1 | Medium</span>
+                    <button class="btn btn-flag" id="flag-btn" onclick="toggleFlag()">⚑ Flag</button>
+                </div>
+                <div class="question-type" id="question-type"></div>
+                <div class="question-text" id="question-text"></div>
+                <div class="options-list" id="options-list"></div>
+                <div class="question-nav">
+                    <button class="btn btn-secondary" id="prev-btn" onclick="prevQuestion()">← Previous</button>
+                    <button class="btn btn-primary" id="next-btn" onclick="nextQuestion()">Next →</button>
+                </div>
+            </div>
+
+            <!-- Navigation Sidebar -->
+            <div class="nav-sidebar">
+                <h3>Question Navigator</h3>
+                <div class="nav-legend">
+                    <span class="legend-item"><span class="dot dot-answered"></span> Answered</span>
+                    <span class="legend-item"><span class="dot dot-flagged"></span> Flagged</span>
+                    <span class="legend-item"><span class="dot dot-unanswered"></span> Unanswered</span>
+                </div>
+                <div class="nav-grid" id="nav-grid"></div>
+                <div class="nav-summary" id="nav-summary"></div>
+            </div>
+        </div>
+
+        <!-- Results Panel (hidden until submission) -->
+        <div class="results-panel" id="results-panel" style="display:none;">
+            <h2>Exam Results</h2>
+            <div class="score-display" id="score-display"></div>
+            <div class="domain-breakdown" id="domain-breakdown"></div>
+            <div class="results-actions">
+                <button class="btn btn-primary" onclick="reviewAnswers()">Review All Answers</button>
+                <a href="/" class="btn btn-secondary">Back to Exam Selection</a>
+            </div>
+            <div class="review-section" id="review-section" style="display:none;"></div>
+        </div>
+    </div>
+
+    <script>
+        const EXAM_ID = "{{ exam_id }}";
+        const SHUFFLE = new URLSearchParams(window.location.search).get('shuffle') === 'true';
+    </script>
+    <script src="/static/exam.js"></script>
+</body>
+</html>

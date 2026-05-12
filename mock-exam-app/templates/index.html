@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS DEA-C01 Mock Exam Simulator</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>AWS Certified Data Engineer — Associate</h1>
+            <p class="subtitle">Mock Exam Simulator (DEA-C01)</p>
+        </header>
+
+        <main class="exam-selection">
+            <h2>Select an Exam</h2>
+            <div class="exam-cards">
+                {% for exam in exams %}
+                <div class="exam-card">
+                    <h3>{{ exam.title }}</h3>
+                    <div class="exam-meta">
+                        <span>{{ exam.question_count }} questions</span>
+                        <span>{{ exam.time_minutes }} minutes</span>
+                    </div>
+                    <div class="exam-actions">
+                        <a href="/exam/{{ exam.id }}" class="btn btn-primary">Start Exam</a>
+                        <a href="/exam/{{ exam.id }}?shuffle=true" class="btn btn-secondary">Start (Shuffled)</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="info-box">
+                <h3>Exam Format</h3>
+                <ul>
+                    <li>65 questions (mix of single-answer and multiple-answer)</li>
+                    <li>170 minutes time limit</li>
+                    <li>Passing score: 720/1000 (~72%)</li>
+                    <li>Flag questions for review</li>
+                    <li>Navigate freely between questions</li>
+                    <li>Detailed explanations after submission</li>
+                </ul>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
