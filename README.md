@@ -1,50 +1,35 @@
-# AWS Certified Data Engineer - Associate (DEA-C01) Prep Kit
+# AWS Certified Data Engineer – Associate (DEA-C01) — refreshed prep kit
+**Last verified: 2026-10-20** · Exam target: **Sun 1 Nov 2026 (IST)** · Based on **exam guide v1.1 (published 2025-12-12)** · Branch `refresh-2026-10` (nothing pushed).
 
-> Tailored for an experienced data engineer with near-zero AWS familiarity.  
-> Timeline: 14 days | 2 hours/day | 28 total study hours  
-> Target: First-attempt pass with confidence
+## Exam facts snapshot (official, verified 2026-10-20)
+DEA-C01 is current (no successor found) · 65 Q (50 scored + 15 unscored) · MC (1 of 4) + multiple-response (2+ of 5+) · 130 min · pass **720/1000** (scaled, compensatory) · USD 150 · EN/JA/KO/ZH · Pearson VUE centre or online · valid 3 y · retake after 14 days · ESL +30 min available.
+Weights: **D1 34 % · D2 26 % · D3 22 % · D4 18 %**. Full detail: `guide/00-exam-overview.md`, `docs/exam-intel.md`.
+**New in v1.1:** LLMs in pipelines, Iceberg/S3 Tables, vector indexes (HNSW/IVF), Bedrock Knowledge Bases, SageMaker Catalog & Unified Studio (domains/projects), governance & sharing patterns; AWS SCT dropped from scope.
 
-## Assumptions Made
+## How to use this in 12 days
+1. **Today:** book the exam / ESL +30 / check ID name (see `study-plan/12-day-plan.md` "Do today").
+2. Follow `study-plan/12-day-plan.md` day by day (≈3.5 h weekdays, 6 h weekends): learn from `guide/` + `cheatsheets/`, practise from `practice/`.
+3. Spaced review: flashcards (`practice/flashcards.csv`, Anki-importable) + error log (`practice/error-log-template.md`).
+4. Mock 1 on Day 8 (Tue 27 Oct), Mock 2 on Day 11 (Fri 30 Oct): `practice/mock-1`, `practice/mock-2` (+ Skill Builder Official Pretest). Score with `practice/scoring-sheet.md`.
+5. Day 12: light review only. Exam day: `docs/exam-day-playbook.md`.
 
-- **Exam date**: ~May 8, 2026 (14 days from April 24, 2026)
-- **Daily study time**: 2 hours (28 hours total)
-- **Budget**: Udemy Professional subscription available (free courses); otherwise free resources
-- **Learning style**: Mix of reading, videos, and light hands-on
-- **AWS access**: Available but preference for theory-heavy approach
-- **Existing AWS knowledge**: S3, Lambda, EC2, Glue, EKS, DynamoDB, ASG basics
-- **Mock exam website**: Will be built as a local web app
+## Study order
+`guide/00-exam-overview` → D1 (1.1 → 1.4) → D2 (2.1 → 2.4) → D3 (3.1 → 3.4) → D4 (4.1 → 4.5) → `guide/X-cross-cutting` → cheatsheets `00`, `12`, `05` → practice sets.
+If behind: use the fallback list in the 12-day plan (cheatsheets first, never skip Kinesis/Firehose/Glue/S3/Redshift/DynamoDB/Lake Formation/IAM-KMS, two mocks).
 
-## Directory Structure
+## Directory map
+| Path | Content |
+|---|---|
+| `guide/` | self-contained study guide by domain/task statement (D1–D4, cross-cutting, exam overview) |
+| `cheatsheets/` | 13 one-pagers: per-domain, master decision tree, **limits sheet (cited)**, formats, Redshift, streaming, Glue, Lake Formation/security, acronyms, confused pairs |
+| `practice/` | 200 original questions: 2 × 65 mocks + 70 topic-set (answers in separate files), scoring sheet, error-log template, 153 flashcards, build scripts |
+| `study-plan/12-day-plan.md` | day-by-day plan, mocks, fallback, exam-day logistics |
+| `docs/` | audit, exam-intel, gap-analysis, sources, changelog, open-questions, progress, exam-day playbook, hands-on labs |
+| `legacy/` | original April-2026 kit and mock-exam app (moved with `git mv`, history kept; superseded) |
+| `DEA-Complete-Guide.md` | generated single file: `bash build_complete_guide.sh` (PDF only if pandoc is installed) |
 
-```
-aws-dea-c01-prep/
-├── README.md                          ← You are here
-├── 01-exam-breakdown.md               ← Exam structure, domains, weighting
-├── 02-skills-gap-analysis.md          ← What you know vs what to learn
-├── 03-study-plan.md                   ← 7-day and 14-day plans
-├── 04-resource-pack.md                ← Categorized links and resources
-├── 05-service-primer.md               ← Service-by-service AWS primer
-├── 06-mock-exam-1.md                  ← Mock exam #1 (65 questions)
-├── 07-mock-exam-2.md                  ← Mock exam #2 (65 questions)
-├── 08-weakness-diagnosis.md           ← How to analyze your results
-├── 09-exam-strategy.md                ← Tactical guide for exam day
-├── 10-cheat-sheet.md                  ← 1-page rapid review
-├── 11-must-know-checklist.md          ← Final checklist
-└── mock-exam-app/                     ← Local exam simulator website
-    ├── README.md
-    ├── ...
-```
+## Tag legend (used everywhere)
+**✓** verified against an AWS page on 2026-10-20 · **~** established knowledge, not re-fetched · **(S)** secondary source only · **[UNVERIFIED]** tracked in `docs/open-questions.md`.
 
-## Quick Start
-
-1. Read `01-exam-breakdown.md` first (15 min)
-2. Review `02-skills-gap-analysis.md` to calibrate (20 min)
-3. Follow `03-study-plan.md` day by day
-4. Use `05-service-primer.md` as your reference throughout
-5. Take mock exams from `06-mock-exam-1.md` and `07-mock-exam-2.md` on Days 11-12
-6. Review with `08-weakness-diagnosis.md`
-7. Final day: `10-cheat-sheet.md` + `09-exam-strategy.md`
-
-## Recommendation
-
-Given your profile (strong DE fundamentals, some AWS exposure, 2 hrs/day), the **14-day plan is the right call**. You don't need to relearn data engineering — you just need to map your knowledge to AWS services and learn the exam's decision patterns. 28 hours is tight but sufficient if you stay focused on high-yield topics.
+## Honest status
+Verified: exam facts, domain/task statements, in-scope services, main quotas (Kinesis, Firehose, Lambda, SQS, Step Functions, S3, DynamoDB, Athena, MSK, MWAA, Glue properties, KMS rotation, CloudTrail Lake, etc.). Not yet independently audited: all practice questions/explanations and most "~" claims (Phase 5). See `docs/PROGRESS.md` and `docs/open-questions.md`.
