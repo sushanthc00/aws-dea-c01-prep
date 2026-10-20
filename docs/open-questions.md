@@ -10,3 +10,7 @@
 9. SageMaker Catalog / Unified Studio domain V1 vs V2 and IAM vs IDC domain details: secondary source only.
 10. Amazon Quick naming: exam guide says "Amazon Quick"; rename chain from secondary sources.
 11. Not yet researched: MSK, MWAA, OpenSearch, Step Functions, EventBridge Pipes, DMS, AppFlow, Keyspaces, Kinesis quotas — to verify at point of writing (Phase 3).
+12. Cheatsheet items tagged ~ (not re-fetched): Glue worker/Flex details, Redshift data sharing prerequisites/DDM/RLS, DynamoDB 400 KB/partition limits/TTL lag, S3 IA 30-day minimum and Glacier retrieval tiers, MSK details, Kinesis EFO per-consumer 2 MB/s, KMS rotation defaults, pgvector HNSW/IVF characteristics, SageMaker domain model. Phase 5 audit to verify.
+13. Kinesis on-demand scale-up rule ("2x previous peak") [UNVERIFIED].
+14. Firehose zero-buffering option and Iceberg destination [UNVERIFIED].
+15. Mock 1 / Mock 2 in the 12-day plan use Skill Builder pretest + old mocks until `practice/` is built.

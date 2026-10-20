@@ -18,3 +18,13 @@
 - Firehose rename: https://aws.amazon.com/about-aws/whats-new/2024/02/amazon-data-firehose-formerly-kinesis-data-firehose
 - Glue zero-ETL: https://docs.aws.amazon.com/glue/latest/dg/zero-etl-using.html
 - Secondary (unverified): atlan.com Quick Suite/Quick & DataZone pages; factualminds.com; hpcwire S3 Tables v3; Athena release notes on docs.amazonaws.cn
+## Cheatsheet limits (fetched 2026-10-20)
+- KDS quotas: https://docs.aws.amazon.com/streams/latest/dev/service-sizes-and-limits.html
+- Firehose quotas: https://docs.aws.amazon.com/firehose/latest/dev/limits.html
+- Lambda quotas: https://docs.aws.amazon.com/lambda/latest/dg/gettingstarted-limits.html
+- S3 performance: https://docs.aws.amazon.com/AmazonS3/latest/userguide/optimizing-performance.html
+- S3 lifecycle transitions: https://docs.aws.amazon.com/AmazonS3/latest/userguide/lifecycle-transition-general-considerations.html
+- DynamoDB quotas: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/ServiceQuotas.html
+- SQS message quotas: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/quotas-messages.html
+- Step Functions quotas: https://docs.aws.amazon.com/step-functions/latest/dg/service-quotas.html
+- Athena quotas: https://docs.aws.amazon.com/athena/latest/ug/service-limits.html
