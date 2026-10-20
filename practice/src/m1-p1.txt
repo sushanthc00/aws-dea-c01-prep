@@ -1,0 +1,267 @@
+@@Q 1 | MC | D1 | 1.1.10 | M | B
+A retail company streams about 12,000 records per second (about 18 MB/s in total) into Amazon Kinesis Data Streams. Three independent applications (fraud detection, a real-time dashboard, and an archiver) must each read the full stream with low latency and without slowing each other down. Traffic varies widely during promotions, and the team wants to avoid capacity planning.
+Which solution meets these requirements with the LEAST operational overhead?
+A. A provisioned stream with 18 shards; all three applications use shared-throughput GetRecords polling.
+B. A stream in on-demand capacity mode; register each application as an enhanced fan-out consumer.
+C. An Amazon Data Firehose stream with three delivery destinations.
+D. An Amazon MSK Serverless cluster with one consumer group shared by the three applications.
+@@E
+- Correct B: On-demand mode removes shard planning, and enhanced fan-out gives each registered consumer its own dedicated 2 MB/s per shard instead of sharing the 2 MB/s shared read limit.
+- A: Shared throughput is 2 MB/s per shard across all consumers; three consumers of 18 MB/s need about 54 MB/s of read capacity but 18 shards give only 36 MB/s, and provisioned mode needs capacity planning.
+- C: Firehose is a delivery service, not a multi-consumer replayable stream; it cannot feed three independent applications.
+- D: One shared consumer group splits partitions between members instead of giving each application the full stream, and it migrates off Kinesis for no stated reason.
+@@Q 2 | MC | D2 | 2.3.2 | M | D
+A company stores audit logs in Amazon S3. The logs are read frequently for the first 30 days, then accessed roughly once per quarter, but any read must return in milliseconds. Logs must be kept 5 years and then deleted. The company wants to minimize storage cost.
+Which S3 Lifecycle configuration should be used?
+A. Store in S3 Intelligent-Tiering and enable the Archive Access and Deep Archive Access tiers; expire after 5 years.
+B. Transition to S3 Glacier Flexible Retrieval after 30 days; expire after 5 years.
+C. Transition to S3 One Zone-IA after 30 days; expire after 5 years.
+D. Transition to S3 Glacier Instant Retrieval after 30 days; expire after 5 years.
+@@E
+- Correct D: Glacier Instant Retrieval is built for rarely accessed data (about quarterly) that still needs millisecond access, at lower storage price than Standard-IA. Its 90-day minimum storage duration is satisfied by a 5-year retention.
+- A: The Archive Access tiers need restore time (minutes to hours), so reads would not return in milliseconds.
+- B: Glacier Flexible Retrieval requires a restore (minutes to hours) before reads.
+- C: One Zone-IA is millisecond access but stores in a single AZ, which is a durability trade-off not asked for; Glacier Instant Retrieval is cheaper for quarterly access.
+@@Q 3 | MC | D1 | 1.1.7 | M | A
+An AWS Lambda function processes records from a Kinesis data stream. One malformed record makes the function throw an error. The same batch is retried repeatedly and processing of that shard stalls until the record expires.
+What should a data engineer do to isolate the bad record and keep the shard moving?
+A. Enable BisectBatchOnFunctionError, set a maximum retry attempts value, and configure an on-failure destination (an SQS queue).
+B. Double the number of shards in the stream.
+C. Increase the function timeout to 15 minutes.
+D. Register the function as an enhanced fan-out consumer.
+@@E
+- Correct A: Bisecting the failed batch narrows it to the bad record; limiting retries and sending failure metadata to an SQS or SNS on-failure destination unblocks the shard.
+- B: More shards do not change retry behavior; the failing shard still blocks.
+- C: A longer timeout does not fix an exception thrown for a bad record.
+- D: Enhanced fan-out changes read throughput, not error handling; the batch would still be retried.
+@@Q 4 | MR | D4 | 4.3.3 | H | B,D
+An S3 bucket in account A is encrypted with SSE-KMS using a customer managed key (CMK) in account A. A bucket policy already allows an IAM role in account B to call s3:GetObject. Reads by the role fail with an AccessDenied error from AWS KMS.
+Which TWO actions are required to fix this? (Select TWO.)
+A. Change the bucket encryption to the AWS managed key aws/s3.
+B. Add a statement to the CMK key policy allowing the account B role to use kms:Decrypt.
+C. Create a KMS grant in account B for the S3 service principal.
+D. Attach an IAM policy to the account B role allowing kms:Decrypt on the CMK ARN.
+E. Enable automatic key rotation on the CMK.
+@@E
+- Correct B and D: Cross-account KMS use needs permission in the key policy (account A) and in an identity policy of the principal in account B.
+- A: AWS managed keys cannot be shared across accounts, and re-encryption is unnecessary.
+- C: Grants are created on the key in the key's account; the S3 service principal in account B is not the issue.
+- E: Rotation does not affect authorization.
+@@Q 5 | MC | D3 | 3.4.5 | M | C
+An AWS Glue Spark job joins two large tables on customer_id. One customer_id accounts for about 60% of rows. A few executors run out of memory while the rest sit idle, and the job takes hours.
+Which change MOST directly addresses the root cause?
+A. Double the number of G.1X workers.
+B. Enable job bookmarks.
+C. Add a random salt to the skewed key (for example key + salt) and join/aggregate in two stages.
+D. Switch the job to the Flex execution class.
+@@E
+- Correct C: The problem is data skew. Salting spreads the hot key across many partitions so work is distributed evenly.
+- A: More workers do not help if one partition holds most of the data.
+- B: Bookmarks control incremental reads, not skew.
+- D: Flex changes cost and start behavior, not data distribution.
+@@Q 6 | MC | D1 | 1.3.1 | M | D
+A pipeline must run an AWS Glue job, then an Athena query, then a Lambda function that publishes a notification. Steps need retries with backoff and failure branching. The team wants a serverless solution with the LEAST operational overhead.
+Which service should orchestrate the pipeline?
+A. Amazon MWAA with an Airflow DAG.
+B. AWS Glue workflows.
+C. Chained Amazon EventBridge rules.
+D. AWS Step Functions with service integrations (.sync for Glue and Athena).
+@@E
+- Correct D: Step Functions natively orchestrates Glue, Athena, and Lambda with Retry/Catch and no servers to manage.
+- A: MWAA works but runs an always-on environment that must be sized and maintained.
+- B: Glue workflows only chain Glue crawlers and jobs, not Athena queries or Lambda.
+- C: Rules react to events but do not provide state, retries with backoff, or branching.
+@@Q 7 | MC | D2 | 2.4.1 | M | A
+A Redshift cluster stores an orders fact table (about 2 billion rows) and a customers table (about 500 million rows). They are joined constantly on customer_id. Queries show large data redistribution (DS_DIST_BOTH) steps.
+Which table design change will MOST improve join performance?
+A. Set DISTSTYLE KEY with DISTKEY(customer_id) on both tables.
+B. Set DISTSTYLE ALL on the customers table.
+C. Set DISTSTYLE EVEN on both tables.
+D. Set DISTSTYLE ALL on the orders table.
+@@E
+- Correct A: Matching distribution keys co-locate rows with the same customer_id on the same slice, avoiding redistribution.
+- B: ALL replicates the table to every node; 500 million rows is far too large to replicate.
+- C: EVEN spreads rows round-robin, which forces redistribution for joins.
+- D: Replicating a 2-billion-row table is wasteful and slows loads.
+@@Q 8 | MC | D1 | 1.2.5 | M | C
+A company receives 2 TB of CSV files in S3 each day. A daily job must apply custom PySpark transformations, join the data with a reference table in an Amazon RDS for PostgreSQL database, and write partitioned Parquet files. The team does not want to manage clusters.
+Which solution is MOST appropriate?
+A. An AWS Lambda function triggered on a schedule.
+B. A long-running Amazon EMR cluster on EC2.
+C. An AWS Glue Spark job with a JDBC connection, started by a scheduled trigger.
+D. An Amazon Athena CTAS query.
+@@E
+- Correct C: Glue is serverless Spark with JDBC connections, scheduling, and Parquet output.
+- A: Lambda has a 15-minute limit and 10 GB memory ceiling; 2 TB of Spark-style processing does not fit.
+- B: EMR on EC2 works but requires cluster management.
+- D: Athena cannot run custom PySpark logic (Athena Spark notebooks are interactive and not the best fit for a scheduled production ETL).
+@@Q 9 | MC | D3 | 3.3.4 | M | B
+An Athena table over 10 TB of JSON logs in S3 is queried daily with filters on event_date. Query costs and runtime are high because each query scans most of the data.
+Which action will reduce both cost and runtime the MOST?
+A. Increase the DML query timeout.
+B. Use CTAS to rewrite the data as Parquet with Snappy compression partitioned by event_date.
+C. Spread the JSON files across more S3 prefixes.
+D. Enable query result reuse.
+@@E
+- Correct B: Columnar compressed format plus partition pruning cuts bytes scanned, which drives both cost and speed.
+- A: A longer timeout does not reduce data scanned.
+- C: More prefixes do not reduce the bytes read by a full scan.
+- D: Result reuse only helps repeated identical queries.
+@@Q 10 | MC | D4 | 4.2.4 | M | D
+Analysts query a customers table through Amazon Athena. The table is registered in the AWS Glue Data Catalog and stored in S3. Analysts must see all columns except ssn, while the data science role must see all columns. The company wants centrally managed, auditable permissions with the LEAST operational overhead.
+Which solution meets this requirement?
+A. An S3 bucket policy that denies analysts access to objects containing ssn.
+B. An IAM policy that denies analysts glue:GetTable on the table.
+C. A second copy of the table without ssn in a separate bucket, maintained by a nightly job.
+D. Register the S3 location with AWS Lake Formation and grant analysts SELECT on the table with the ssn column excluded.
+@@E
+- Correct D: Lake Formation provides column-level permissions enforced for Athena, centrally managed and logged.
+- A: Bucket policies work on objects, not columns.
+- B: Denying GetTable blocks the whole table, not one column.
+- C: Works but adds a pipeline and duplicate storage to maintain.
+@@Q 11 | MC | D1 | 1.1.1 | M | A
+A company runs Apache Kafka on premises with Kafka Streams and Kafka Connect applications. It wants to move to AWS and keep the existing producers and consumers with minimal code changes.
+Which service should the company choose?
+A. Amazon MSK.
+B. Amazon Kinesis Data Streams.
+C. Amazon Data Firehose.
+D. Amazon SQS.
+@@E
+- Correct A: MSK is managed Apache Kafka, compatible with Kafka APIs, Streams, and Connect (MSK Connect).
+- B: Kinesis uses its own APIs; applications would need rewriting.
+- C: Firehose is delivery only.
+- D: SQS is a queue with a different API.
+@@Q 12 | MC | D2 | 2.4.1 | M | B
+An application needs two access patterns on an orders dataset in Amazon DynamoDB: (1) list all orders for a customer, newest first; (2) fetch one order by order ID. Both must be efficient and avoid scans.
+Which table design satisfies both?
+A. Partition key orderId with a local secondary index on customerId.
+B. Partition key customerId, sort key orderDate, and a global secondary index with partition key orderId.
+C. Partition key customerId, sort key orderDate; use a Scan with a filter for orderId lookups.
+D. Partition key orderDate and sort key customerId.
+@@E
+- Correct B: The base table serves pattern 1 with a Query; the GSI serves pattern 2.
+- A: A local secondary index must share the table partition key, so it cannot re-partition by customerId.
+- C: Scans read the whole table and are inefficient.
+- D: Date as a partition key creates hot partitions and does not support either pattern well.
+@@Q 13 | MC | D1 | 1.2.6 | M | D
+Application events arrive as JSON and must be delivered in near real time to Amazon S3 as Parquet files, with no custom code and minimal operations.
+Which solution meets these requirements?
+A. Kinesis Data Streams with a Lambda function writing Parquet to S3.
+B. An EMR cluster running Spark Structured Streaming.
+C. AWS Glue crawlers scheduled every minute.
+D. Amazon Data Firehose with record format conversion to Parquet using an AWS Glue table schema.
+@@E
+- Correct D: Firehose buffers and converts JSON to Parquet or ORC using a Glue Data Catalog schema, fully managed.
+- A: Requires custom code and operations.
+- B: Works but needs cluster management.
+- C: Crawlers infer schemas; they do not move or convert streaming data.
+@@Q 14 | MC | D3 | 3.3.4 | M | A
+At the start of each business hour, many analysts open dashboards that run short queries on an Amazon Redshift provisioned cluster. Queries queue for minutes during these bursts and are fast the rest of the day.
+Which approach addresses this with the LEAST effort and cost?
+A. Enable concurrency scaling with automatic workload management.
+B. Double the number of nodes permanently.
+C. Convert all tables to DISTSTYLE ALL.
+D. Move the data to Amazon RDS.
+@@E
+- Correct A: Concurrency scaling adds transient capacity for bursts of concurrent queries and is billed only when used; automatic WLM manages queues.
+- B: Permanent capacity for a short burst is expensive.
+- C: DISTSTYLE ALL does not address concurrency and bloats storage.
+- D: RDS is not designed for analytical workloads of this kind.
+@@Q 15 | MC | D1 | 1.1.9 | M | C
+A nightly ETL job writes to a DynamoDB table in provisioned capacity mode. Bursts of writes from unpredictable sources cause ProvisionedThroughputExceededException. The team wants the LEAST operational overhead.
+What should the data engineer do?
+A. Increase the table read capacity units.
+B. Add DynamoDB Accelerator (DAX).
+C. Switch the table to on-demand capacity mode and keep retries with exponential backoff.
+D. Add a local secondary index.
+@@E
+- Correct C: On-demand adapts to unpredictable write bursts without capacity planning; SDK retries with backoff handle residual throttling.
+- A: The problem is writes, not reads.
+- B: DAX is a read cache and does not help writes.
+- D: An index adds write cost.
+@@Q 16 | MR | D2 | 2.1.7 | M | A,D
+A company wants to run row-level updates and deletes on data in its S3 data lake using Athena and to query the data as it looked last week. The company is evaluating Apache Iceberg tables.
+Which TWO capabilities do Iceberg tables provide for this? (Select TWO.)
+A. ACID row-level operations such as MERGE and DELETE.
+B. Automatic B-tree indexing of every column.
+C. Elimination of the need for any metadata or catalog.
+D. Snapshot-based time travel.
+E. Enforced foreign key constraints.
+@@E
+- Correct A and D: Iceberg supports transactional row-level changes and snapshot time travel.
+- B: Iceberg uses metadata and file statistics, not B-tree indexes.
+- C: Iceberg tables still need a catalog.
+- E: Iceberg has no enforced foreign keys.
+@@Q 17 | MC | D4 | 4.1.3 | M | B
+An AWS Glue job connects to an Amazon RDS database using a password that security policy requires to be rotated every 30 days without code changes or job downtime.
+Which solution meets this requirement?
+A. Store the password in a Glue job parameter and update it manually.
+B. Store the credentials in AWS Secrets Manager with automatic rotation, and reference the secret in the Glue connection.
+C. Store the password in an S3 object encrypted with SSE-S3.
+D. Embed the password in the script and rotate by redeploying.
+@@E
+- Correct B: Secrets Manager supports scheduled automatic rotation for RDS and Glue connections can read the secret.
+- A: Manual and error-prone.
+- C: No rotation capability.
+- D: Poor practice and requires changes.
+@@Q 18 | MC | D1 | 1.1.6 | M | D
+A partner uploads a daily file to an S3 bucket at an unpredictable time. After the file arrives, a Glue crawler and then a Glue job must run exactly once. The solution should be serverless and avoid polling.
+Which design is MOST appropriate?
+A. A Glue trigger that runs the crawler every hour.
+B. A Lambda function on a one-minute schedule that lists the bucket.
+C. A Glue crawler scheduled to run continuously.
+D. An S3 event to Amazon EventBridge that starts a Step Functions state machine to run the crawler and job.
+@@E
+- Correct D: Event-driven start with orchestrated ordered steps and no polling.
+- A: Delay of up to an hour and runs even without a file.
+- B: Polling wastes invocations and needs de-duplication logic.
+- C: Crawlers do not run continuously and do not run jobs.
+@@Q 19 | MC | D3 | 3.3.3 | M | B
+A team wants to be alerted when a consumer application falls behind processing a Kinesis data stream.
+Which approach is the MOST direct?
+A. A CloudWatch alarm on WriteProvisionedThroughputExceeded, notifying an SNS topic.
+B. A CloudWatch alarm on GetRecords.IteratorAgeMilliseconds, notifying an SNS topic.
+C. A CloudWatch alarm on IncomingBytes.
+D. A CloudTrail trail on GetRecords API calls.
+@@E
+- Correct B: Iterator age measures how old the oldest record returned is; rising age means the consumer is lagging.
+- A: Indicates producer-side write throttling.
+- C: Measures ingest volume, not consumer lag.
+- D: CloudTrail does not alert on lag and GetRecords is a data-plane call.
+@@Q 20 | MR | D2 | 2.3.1 | M | C,E
+An Amazon Redshift cluster holds 5 years of sales data. Data older than 1 year is rarely queried but must remain queryable with SQL. The company wants to cut storage cost.
+Which TWO actions should be taken? (Select TWO.)
+A. Add more compute nodes.
+B. Change all tables to DISTSTYLE EVEN.
+C. UNLOAD the old data to Amazon S3 in Parquet format.
+D. DELETE the old rows and run VACUUM only.
+E. Create an external schema and tables so Redshift Spectrum can query the S3 data.
+@@E
+- Correct C and E: Offload cold data to cheap S3 in a columnar format and keep it queryable with Spectrum.
+- A: Raises cost.
+- B: Does not reduce storage.
+- D: Removes the data, so it is no longer queryable.
+@@Q 21 | MC | D1 | 1.4.2 | H | B
+An SQS queue triggers a Lambda function that writes to an Amazon RDS for MySQL database. During backlogs Lambda scales out and exhausts the database's connection limit.
+Which change BEST protects the database?
+A. Increase the function memory.
+B. Set a maximum concurrency on the SQS event source mapping (and use RDS Proxy for connection pooling).
+C. Convert to a FIFO queue.
+D. Increase the queue visibility timeout.
+@@E
+- Correct B: Limiting concurrent invocations bounds database connections; RDS Proxy pools and reuses them.
+- A: More memory does not limit concurrency.
+- C: FIFO ordering is unrelated and could lower throughput.
+- D: Visibility timeout controls reprocessing, not concurrency.
+@@Q 22 | MC | D4 | 4.1.1 | M | A
+AWS Glue jobs run in a private subnet with no internet route. The jobs must read and write S3 data at the LOWEST cost.
+What should be configured?
+A. An S3 gateway VPC endpoint associated with the subnet route table.
+B. A NAT gateway in a public subnet.
+C. An internet gateway attached to the VPC.
+D. An interface VPC endpoint for AWS Glue only.
+@@E
+- Correct A: Gateway endpoints for S3 are free and keep traffic on the AWS network.
+- B: Works but incurs hourly and data-processing charges.
+- C: Private subnets would still lack a route, and it exposes traffic to the internet path.
+- D: Does not provide S3 access.
