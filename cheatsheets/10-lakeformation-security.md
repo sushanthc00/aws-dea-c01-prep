@@ -54,3 +54,4 @@ Security groups (stateful, allow-only, reference other SGs; Glue/Redshift/EMR/RD
 - Interface endpoint needed for Kinesis/Glue; gateway endpoint for S3/DynamoDB.
 - Secrets Manager when “automatic rotation”; Parameter Store when “cheapest config”.
 - SCP denies; it never grants.
+- ⚠ CloudTrail Lake: not open to new customers from 2026-05-31 (existing customers fine) ✓ per AWS doc; skill 4.4.3 still in exam guide. See guide/D4/4.4.

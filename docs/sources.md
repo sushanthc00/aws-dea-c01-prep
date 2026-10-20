@@ -46,3 +46,11 @@
 - Athena capacity reservations: https://docs.aws.amazon.com/athena/latest/ug/capacity-management.html
 - CloudWatch Logs Insights: https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AnalyzingLogData.html
 - (Athena workgroup cost-control page returned no content; workgroup details tagged ~)
+## Phase 3 D4 fetches (2026-10-20)
+- LF hybrid access mode: https://docs.aws.amazon.com/lake-formation/latest/dg/hybrid-access-mode.html
+- KMS external accounts: https://docs.aws.amazon.com/kms/latest/developerguide/key-policy-modifying-external-accounts.html
+- KMS rotation: https://docs.aws.amazon.com/kms/latest/developerguide/rotate-keys.html
+- SageMaker Unified Studio (user guide intro): https://docs.aws.amazon.com/sagemaker-unified-studio/latest/userguide/what-is-sagemaker-unified-studio.html
+- Macie: https://docs.aws.amazon.com/macie/latest/user/what-is-macie.html
+- CloudTrail Lake: https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-lake.html
+- Secrets Manager rotation: https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets.html
