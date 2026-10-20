@@ -67,7 +67,7 @@
 "Redshift Serverless?","Per-RPU usage billing; good for spiky/dev workloads; 3-year reservations up to 45% savings.","D3 redshift verified"
 "Redshift lock troubleshooting?","STV_LOCKS / SVV_TRANSACTIONS; end blocker with PG_TERMINATE_BACKEND.","D2 redshift"
 "Redshift row/column masking?","Row-level security, column-level GRANT, dynamic data masking policies by role.","D4 redshift"
-"Redshift minimum TLS?","TLS 1.2 enforced from 2026-01-31.","D4 redshift verified"
+"Redshift minimum TLS?","TLS 1.2 minimum enforced from 2026-10-31 (TLS 1.0/1.1 rejected).","D4 redshift verified"
 "Redshift Python UDF status?","Scalar Python UDFs end of support after 2026-06-30; use Lambda UDFs.","D1 redshift verified"
 "Redshift streaming ingestion?","Materialized view over Kinesis/MSK; concurrency scaling covers KDS refresh (Aug 2026).","D1 redshift verified"
 "Redshift zero-ETL?","Managed continuous replication from Aurora/RDS/DynamoDB into Redshift, no pipeline.","D2 redshift"

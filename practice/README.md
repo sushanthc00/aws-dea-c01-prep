@@ -18,3 +18,5 @@ Composition per mock: 65 Qs = D1 22 · D2 17 · D3 14 · D4 12 (official weights
 Difficulty tags are my estimate (E/M/H). Questions are original scenario items written from the exam guide skills and cheatsheets — nothing taken from real exams.
 
 **Caveats (honest status):** first-draft; not yet independently fact-checked (Phase 5). If a question conflicts with the official AWS docs or Skill Builder, trust the docs and tell me so it goes in `docs/open-questions.md`. Mock questions are single-sentence-qualifier style and somewhat easier than the real exam's longer stems; use the Skill Builder Official Pretest as the harder benchmark.
+
+**Known quality caveat:** in a first QA pass the correct MC option was the longest in 85 % of items (a test-taking cue). Options were rewritten; it is now 41 % / 62 % / 76 % (Mock 1 / Mock 2 / topic sets) with mild length ratios. Don't use length as a clue. Details: `docs/known-limitations.md`.

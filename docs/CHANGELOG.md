@@ -9,3 +9,4 @@
 - 2026-10-20 Phase 3 D3 done (guide/D3 x4). Limits sheet Athena capacity row corrected from official page.
 - 2026-10-20 Phase 3 D4 + X done (guide/D4 x5, guide/X-cross-cutting.md). Facts added: CloudTrail Lake closed to new customers 2026-05-31; LF hybrid access mode details; KMS cross-account/rotation details.
 - 2026-10-20: moved original files to legacy/ (git mv, history preserved): README, 01-12 md files, mock-exam-app. Added guide/00-exam-overview.md, docs/exam-day-playbook.md, docs/hands-on-labs.md, root README.md, build_complete_guide.sh (generates DEA-Complete-Guide.md).
+- 2026-10-20 Phase 5: scripted verification (tools/), MC option-length rebalance (3 patch rounds), independent sonnet fact-check (docs/notes/factcheck-report.md) -> fixed Redshift TLS date (2026-10-31), P203 date, Serverless reservation %, TTL wording; added docs/coverage-matrix.md, docs/known-limitations.md.
