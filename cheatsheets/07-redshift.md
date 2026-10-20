@@ -7,7 +7,7 @@
 | Use | steady, predictable, reserved pricing | spiky/unpredictable, least ops, per-RPU-second |
 | Scale | resize / elastic resize; **concurrency scaling** for read bursts | auto; base RPU capacity; 3-yr reservation up to 45 % savings ✓ |
 | Storage | RA3 managed storage (S3-backed), compute/storage decoupled ~ | managed |
-Redshift Spectrum = query S3 external tables (Glue catalog) without loading · Federated query = RDS/Aurora PostgreSQL/MySQL live · Data sharing = live read access across clusters/accounts/Regions without copying (producer/consumer; needs RA3 or Serverless ~) · Streaming ingestion = materialized view over KDS/MSK ✓ (concurrency scaling for KDS refresh ✓) · zero-ETL from Aurora/RDS/DynamoDB ~ · Auto-copy from S3 ~ · Min TLS 1.2 ✓ · scalar Python UDF end of support after 2026-06-30 → Lambda UDF ✓.
+Redshift Spectrum = query S3 external tables (Glue catalog) without loading · Federated query = RDS/Aurora PostgreSQL/MySQL live · Data sharing = live access across clusters/serverless workgroups/accounts/Regions without copying (producer/consumer); ✓ now supports **writes** (INSERT/UPDATE) as well as reads, not read-only · Streaming ingestion = materialized view over KDS/MSK ✓ (concurrency scaling for KDS refresh ✓) · zero-ETL from Aurora/RDS/DynamoDB ~ · Auto-copy from S3 ~ · Min TLS 1.2 ✓ · scalar Python UDF end of support after 2026-06-30 → Lambda UDF ✓.
 
 ## Table design (skill 2.4.1)
 | Distribution | When |

@@ -35,3 +35,9 @@
 - Glue job properties (versions, workers, Flex, timeout): https://docs.aws.amazon.com/glue/latest/dg/add-job.html
 - DMS S3 target: https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.S3.html
 - EventBridge Scheduler: https://docs.aws.amazon.com/scheduler/latest/UserGuide/what-is-scheduler.html
+## Phase 3 D2 fetches (2026-10-20)
+- S3 storage classes: https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html
+- Redshift data sharing: https://docs.aws.amazon.com/redshift/latest/dg/datashare-overview.html
+- S3 Tables: https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-tables.html
+- Aurora PostgreSQL pgvector / Bedrock KB: https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.VectorDB.html
+- DMS Schema Conversion: https://docs.aws.amazon.com/dms/latest/userguide/CHAP_SchemaConversion.html

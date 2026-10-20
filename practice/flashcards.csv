@@ -63,7 +63,7 @@
 "Redshift UNLOAD?","Parallel export to S3, supports Parquet and PARTITION BY.","D2 redshift"
 "Redshift Spectrum?","Query S3 external tables (Glue catalog) in place; cold data tiering.","D2 redshift"
 "Redshift concurrency scaling?","Extra transient read capacity for query bursts; with automatic WLM and SQA.","D3 redshift"
-"Redshift data sharing?","Live read access across clusters/accounts without copying; producer authorizes, consumer associates.","D4 redshift"
+"Redshift data sharing?","Live access (reads, and now writes) across clusters/workgroups/accounts/Regions without copying; producer authorizes, consumer associates.","D4 redshift"
 "Redshift Serverless?","Per-RPU usage billing; good for spiky/dev workloads; 3-year reservations up to 45% savings.","D3 redshift verified"
 "Redshift lock troubleshooting?","STV_LOCKS / SVV_TRANSACTIONS; end blocker with PG_TERMINATE_BACKEND.","D2 redshift"
 "Redshift row/column masking?","Row-level security, column-level GRANT, dynamic data masking policies by role.","D4 redshift"
