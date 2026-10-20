@@ -14,3 +14,5 @@
 13. Kinesis on-demand scale-up rule ("2x previous peak") [UNVERIFIED].
 14. Firehose zero-buffering option and Iceberg destination [UNVERIFIED].
 15. Mock 1 / Mock 2 in the 12-day plan use Skill Builder pretest + old mocks until `practice/` is built.
+16. Firehose Iceberg destination, Step Functions integration count (200+), Glue Python shell DPU sizes, EventBridge rule cron UTC-only, Glue auto scaling versions, Bedrock batch inference details: tagged ~ / [UNVERIFIED] in guide D1.
+17. Glue 6.0 existence confirmed (Spark 4.1.1, Python 3.13) from Glue job-properties page; cheatsheet 09 updated. Earlier note that 5.1 is "current" superseded: 5.1 is the default for new jobs.

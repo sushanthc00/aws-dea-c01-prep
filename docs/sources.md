@@ -28,3 +28,10 @@
 - SQS message quotas: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/quotas-messages.html
 - Step Functions quotas: https://docs.aws.amazon.com/step-functions/latest/dg/service-quotas.html
 - Athena quotas: https://docs.aws.amazon.com/athena/latest/ug/service-limits.html
+## Phase 3 D1 fetches (2026-10-20)
+- Lambda + Kinesis ESM: https://docs.aws.amazon.com/lambda/latest/dg/with-kinesis.html
+- MWAA environment class: https://docs.aws.amazon.com/mwaa/latest/userguide/environment-class.html
+- MSK quotas: https://docs.aws.amazon.com/msk/latest/developerguide/limits.html
+- Glue job properties (versions, workers, Flex, timeout): https://docs.aws.amazon.com/glue/latest/dg/add-job.html
+- DMS S3 target: https://docs.aws.amazon.com/dms/latest/userguide/CHAP_Target.S3.html
+- EventBridge Scheduler: https://docs.aws.amazon.com/scheduler/latest/UserGuide/what-is-scheduler.html

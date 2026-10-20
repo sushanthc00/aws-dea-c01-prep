@@ -1,5 +1,5 @@
 # AWS Glue cheat sheet
-✓ verified (exam/WN) · ~ established, re-check Phase 3. Current version: **Glue 5.1** (Spark 3.5.6, Python 3.11, Scala 2.12.18; Iceberg 1.10.0, Hudi 1.0.2, Delta 3.3.2) ✓.
+✓ verified (exam/WN) · ~ established, re-check Phase 3. Versions ✓ (Glue job-properties page): **6.0** (Spark 4.1.1, Python 3.13), **5.1 = default for new jobs** (Spark 3.5.6, Python 3.11, Scala 2.12.18; Iceberg 1.10.0, Hudi 1.0.2, Delta 3.3.2), 5.0, 4.0, 3.0. Workers ✓: G.025X (streaming) · G.1X 1 DPU (4 vCPU/16 GB) · G.2X 2 DPU · G.4X · G.8X · G.12X · G.16X · memory-optimised R.1X–R.8X. Flex = G.1X/G.2X only. Timeout max 7 d; default 480 min (Glue 5.0+); retries 0–10.
 
 ## Components
 | Component | What | Exam hook |
