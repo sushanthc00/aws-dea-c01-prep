@@ -6,3 +6,4 @@
 - 2026-10-20 Phase 4.3-4.4 done: practice/topic-sets (70 Qs), error-log-template.md, flashcards.csv.
 - 2026-10-20 Phase 3 D1 done: guide/D1 (4 files), guide/README.md; cheatsheets/09 Glue versions corrected (6.0 exists).
 - 2026-10-20 Phase 3 D2 done (guide/D2 x4). Corrected: Redshift data sharing supports writes (cheatsheet 07, flashcards). Old repo statement 'read-only' superseded.
+- 2026-10-20 Phase 3 D3 done (guide/D3 x4). Limits sheet Athena capacity row corrected from official page.

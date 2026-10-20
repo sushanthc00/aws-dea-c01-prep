@@ -17,3 +17,5 @@
 16. Firehose Iceberg destination, Step Functions integration count (200+), Glue Python shell DPU sizes, EventBridge rule cron UTC-only, Glue auto scaling versions, Bedrock batch inference details: tagged ~ / [UNVERIFIED] in guide D1.
 17. Glue 6.0 existence confirmed (Spark 4.1.1, Python 3.13) from Glue job-properties page; cheatsheet 09 updated. Earlier note that 5.1 is "current" superseded: 5.1 is the default for new jobs.
 18. D2 guide items tagged ~: Glacier retrieval tier times, DynamoDB PITR/TTL timing, Aurora replica count, MemoryDB vector search, S3 Vectors GA/limits, SageMaker Catalog details (secondary), IVFFlat characteristics, crawler incremental/classifier details, Athena Iceberg commands.
+19. Athena workgroup data-usage controls and DataBrew ruleset details: page content not retrieved; tagged ~ in D3 guide. Quick/SPICE limits, DataBrew transform count, CloudTrail 90-day event history, MSK/OpenSearch troubleshooting items tagged ~.
+20. "Athena capacity reservation 1-minute minimum" from secondary source: not confirmed by the official page; removed from limits sheet.

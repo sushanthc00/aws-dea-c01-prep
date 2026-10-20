@@ -57,7 +57,7 @@ Per-table default 40,000 RCU/WCU (provisioned and on-demand) · per-account 80,0
 ~ Item 400 KB · partition 3,000 RCU/1,000 WCU · RCU = 4 KB strongly consistent (eventually consistent = half; transactional = 2×) · WCU = 1 KB · query/scan page 1 MB · LSI forces 10 GB per partition-key collection · TTL deletes within ~48 h of expiry (free, no WCU).
 
 ## Athena ✓ [Athena quotas](https://docs.aws.amazon.com/athena/latest/ug/service-limits.html)
-Query string 262,144 bytes (hard) · DML timeout adjustable to 240 min (default 30 min ~) · active DML/DDL include queued; excess → `TooManyRequestsException` · reads ≤ **1 million partitions per scan** (tables may have 10 M) · 1,000 workgroups/Region · S3 buckets/account 10,000 default · Capacity Reservations: 4-DPU minimum, 1-minute minimum duration (Feb 2026, via secondary source ~).
+Query string 262,144 bytes (hard) · DML timeout adjustable to 240 min (default 30 min ~) · active DML/DDL include queued; excess → `TooManyRequestsException` · reads ≤ **1 million partitions per scan** (tables may have 10 M) · 1,000 workgroups/Region · S3 buckets/account 10,000 default · Capacity reservations ✓: minimum 4 DPUs, queries on reserved capacity do not count toward DML/DDL quotas, queue up to 10 h, 20 workgroups per reservation, 100 reservations / 1,000 DPUs per account-Region (Athena capacity docs). The "1-minute minimum" in an earlier secondary source is [UNVERIFIED].
 
 ## Redshift (from What's New; ✓ headline-level)
 Min TLS 1.2 enforced from 2026-01-31 · scalar Python UDF end of support after 2026-06-30 (use Lambda UDFs) · concurrency scaling covers KDS streaming-ingestion MV refresh (patch P203, Aug 2026) · Serverless 3-yr reservations up to 45 % savings.

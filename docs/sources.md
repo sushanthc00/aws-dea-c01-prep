@@ -41,3 +41,8 @@
 - S3 Tables: https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-tables.html
 - Aurora PostgreSQL pgvector / Bedrock KB: https://docs.aws.amazon.com/AmazonRDS/latest/AuroraUserGuide/AuroraPostgreSQL.VectorDB.html
 - DMS Schema Conversion: https://docs.aws.amazon.com/dms/latest/userguide/CHAP_SchemaConversion.html
+## Phase 3 D3 fetches (2026-10-20)
+- Glue DQDL: https://docs.aws.amazon.com/glue/latest/dg/dqdl.html
+- Athena capacity reservations: https://docs.aws.amazon.com/athena/latest/ug/capacity-management.html
+- CloudWatch Logs Insights: https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/AnalyzingLogData.html
+- (Athena workgroup cost-control page returned no content; workgroup details tagged ~)
