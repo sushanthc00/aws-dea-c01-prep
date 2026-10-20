@@ -7,9 +7,9 @@ Timed: ~2 min per question. Do not open the answers file until the whole mock is
 A nightly job calls a paginated third-party REST API, takes about 40 minutes, and writes JSON to S3. The team wants the simplest serverless scheduled solution.
 Which option is BEST?
 
-A. A single Lambda function that runs for 40 minutes.  
-B. An EC2 instance with cron.  
-C. An EMR cluster.  
+A. A single Lambda function that is allowed to run for 40 minutes.  
+B. An EC2 instance that runs a cron job calling the API.  
+C. An EMR cluster that is started for the nightly run.  
 D. An AWS Glue Python shell job started by a schedule.  
 
 ### Q46
@@ -17,10 +17,10 @@ D. An AWS Glue Python shell job started by a schedule.
 A Spark job in AWS Glue reads a very large table from Amazon RDS for PostgreSQL over JDBC and is slow because a single connection reads all rows.
 How can read performance be improved?
 
-A. Configure a partitioned JDBC read (partition column with lower and upper bounds, or Glue hashfield/hashpartitions) for parallel reads.  
-B. Add more workers without changing the read.  
-C. Convert the job to a Python shell job.  
-D. Disable the JDBC connection.  
+A. Configure a partitioned JDBC read (a partition column with bounds, or hashfield/hashpartitions).  
+B. Add more workers without changing how the JDBC source is read.  
+C. Convert the job to a Python shell job to avoid Spark overhead.  
+D. Disable the JDBC connection and export the table to CSV by hand.  
 
 ### Q47
 
@@ -37,50 +37,50 @@ D. Amazon Kinesis Data Firehose.
 An EMR Spark step failed, and the cluster was terminated before engineers could inspect the YARN and Spark logs.
 What should be configured to prevent this problem?
 
-A. A larger instance type.  
-B. EMR managed scaling.  
-C. A cluster log URI (log archiving) to an S3 bucket.  
-D. A smaller block size.  
+A. A larger instance type for the primary node.  
+B. EMR managed scaling for the core and task node groups.  
+C. A cluster log URI that archives the logs to an S3 bucket.  
+D. A smaller HDFS block size for the Spark input data.  
 
 ### Q49
 
 Jobs in a VPC use an S3 gateway endpoint. Security wants to ensure traffic through the endpoint can reach only the company's data lake buckets.
 What should be configured?
 
-A. A security group on the S3 endpoint.  
+A. A security group attached to the S3 gateway endpoint.  
 B. A VPC endpoint policy that allows only the company's buckets.  
-C. An S3 lifecycle rule.  
-D. A Route 53 private hosted zone.  
+C. An S3 lifecycle rule on the shared buckets.  
+D. A Route 53 private hosted zone that resolves only the company's buckets.  
 
 ### Q50
 
 A company must classify 10 million support tickets nightly with a foundation model and store the results in S3. Results are not needed in real time, and cost efficiency matters.
 Which approach is BEST?
 
-A. Call the model synchronously per ticket from a Lambda function with unlimited concurrency.  
-B. Train a custom model on SageMaker daily.  
+A. Call the model synchronously for every ticket from a Lambda function with unlimited concurrency.  
+B. Train a custom classification model on SageMaker every day.  
 C. Run an Amazon Bedrock batch inference job that reads prompts from S3 and writes results to S3.  
-D. Use Amazon Rekognition.  
+D. Send every ticket to Amazon Rekognition for classification.  
 
 ### Q51
 
 An existing application on Amazon Aurora PostgreSQL needs semantic search over product descriptions and must join results with relational tables in the same database, without adding a new service.
 What should the data engineer use?
 
-A. Amazon DynamoDB.  
-B. Amazon S3 Select.  
-C. Amazon Athena.  
-D. The pgvector extension with vector columns and an approximate nearest-neighbor index.  
+A. Amazon DynamoDB with a separate similarity-search service.  
+B. Amazon S3 Select over exported embeddings.  
+C. Amazon Athena over the embeddings stored in S3.  
+D. The pgvector extension with an approximate nearest-neighbor index.  
 
 ### Q52
 
 A new Airflow DAG file uploaded to the MWAA environment's S3 dags folder does not appear in the Airflow UI.
 What should the engineer check first?
 
-A. The scheduler/DAG processing logs in CloudWatch Logs for import or syntax errors, and that the file is in the configured dags path.  
-B. The VPC route tables for the S3 bucket.  
-C. The Glue Data Catalog.  
-D. Kinesis shard count.  
+A. The DAG processing logs in CloudWatch Logs, and the file's path under dags/.  
+B. The VPC route tables for the S3 bucket that holds the DAG files.  
+C. The Glue Data Catalog entries that the DAG reads at parse time.  
+D. The Kinesis shard count of the stream that triggers the DAG.  
 
 ### Q53
 
@@ -137,19 +137,19 @@ D. AWS Batch with EC2.
 A team wants every change to a Glue ETL script and its infrastructure to be tested and deployed automatically.
 Which approach is BEST?
 
-A. AWS CodePipeline with CodeBuild running unit tests and deploying the infrastructure through CloudFormation or CDK.  
-B. Editing scripts directly in the console.  
-C. Emailing scripts to operations.  
-D. A cron job copying files.  
+A. AWS CodePipeline with CodeBuild unit tests, deploying through CloudFormation or CDK.  
+B. Editing the Glue scripts directly in the console and saving the new version.  
+C. Emailing updated scripts to operations, who upload them to S3 after review.  
+D. A cron job on an EC2 instance that copies the scripts to S3 every night.  
 
 ### Q59
 
 A developer wants to define a Lambda function, a Step Functions state machine, and a DynamoDB table in one template, test locally, and deploy.
 Which tool is MOST appropriate?
 
-A. AWS CLI scripts only.  
-B. Manual console configuration.  
-C. AWS Batch.  
+A. AWS CLI scripts that create each resource one by one.  
+B. Manual console configuration that is documented in a runbook.  
+C. AWS Batch jobs that deploy each resource on demand.  
 D. AWS Serverless Application Model (AWS SAM).  
 
 ### Q60
@@ -157,10 +157,10 @@ D. AWS Serverless Application Model (AWS SAM).
 A company must keep a copy of critical S3 data in another Region for disaster recovery with minimal effort.
 What should be enabled?
 
-A. S3 Transfer Acceleration.  
-B. S3 Select.  
+A. S3 Transfer Acceleration on the source bucket.  
+B. S3 Select queries that copy the critical objects.  
 C. S3 Cross-Region Replication (with versioning enabled).  
-D. A VPC peering connection.  
+D. A VPC peering connection between two Regions.  
 
 ### Q61
 
@@ -177,10 +177,10 @@ E. It requires restores before reads.
 A Glue Spark job reading thousands of tiny JSON files from S3 spends most of its time listing and opening files.
 What is the BEST tuning step?
 
-A. Reduce the number of workers.  
+A. Reduce the number of workers to lower the per-file overhead.  
 B. Use file grouping (groupFiles and groupSize) or compact the inputs into larger files.  
-C. Disable the Data Catalog.  
-D. Increase the job timeout.  
+C. Disable the Data Catalog so that the job lists the files itself.  
+D. Increase the job timeout so that the listing can finish.  
 
 ### Q63
 
@@ -198,17 +198,17 @@ E. Skipping profiling entirely.
 A Glue ETL job writes to S3 and CloudWatch Logs and uses bookmarks. Policy requires all three to be encrypted with a customer managed KMS key.
 What should be used?
 
-A. S3 Select.  
-B. A Glue crawler.  
-C. Data Catalog resource policy only.  
-D. A Glue security configuration that specifies KMS keys for S3, CloudWatch Logs, and job bookmarks.  
+A. S3 Select on the job's output location to read the encrypted files.  
+B. A Glue crawler that scans the encrypted output location.  
+C. A Data Catalog resource policy that restricts who can read the output.  
+D. A Glue security configuration that specifies KMS keys for S3, CloudWatch Logs and bookmarks.  
 
 ### Q65
 
 The security team wants to prevent anyone in the account from making S3 buckets or objects public.
 Which control is MOST effective?
 
-A. Educate developers.  
-B. Use bucket tags.  
+A. Educate developers about the risks of public buckets.  
+B. Use bucket tags to mark which buckets may be public.  
 C. Enable S3 Block Public Access at the account level.  
-D. Enable CloudWatch Logs.  
+D. Enable CloudWatch Logs for the S3 buckets.  

@@ -7,10 +7,10 @@ Timed: ~2 min per question. Do not open the answers file until the whole mock is
 Application events arrive in Amazon Data Firehose as JSON, each containing a customer_id. Delivery to S3 must be organized under prefixes such as customer_id=123/, with the LEAST custom infrastructure.
 What should the data engineer configure?
 
-A. A Lambda function that writes each record to its own S3 object.  
-B. An AWS Glue job that repartitions the data hourly.  
-C. Firehose dynamic partitioning, extracting customer_id from the records to build the S3 prefix.  
-D. A separate Firehose stream per customer.  
+A. A Lambda function that writes each record to its own S3 object under a customer prefix.  
+B. An AWS Glue job that repartitions the delivered data by customer_id every hour.  
+C. Firehose dynamic partitioning, extracting customer_id from each record to build the S3 prefix.  
+D. A separate Firehose delivery stream for each customer, each with its own S3 prefix.  
 
 ### Q2
 
@@ -36,10 +36,10 @@ D. Use S3 Intelligent-Tiering.
 An AWS Glue job in account A must read from an S3 bucket in account B. The job's role in account A already has an IAM policy allowing s3:GetObject on the bucket.
 What additional step is required?
 
-A. Add the Glue service principal to the bucket policy.  
-B. Add a bucket policy in account B that allows the Glue job role in account A to s3:GetObject (and s3:ListBucket).  
-C. Create IAM users in account B.  
-D. Enable S3 Transfer Acceleration.  
+A. Add the Glue service principal glue.amazonaws.com to the bucket policy in account B.  
+B. Add a bucket policy in account B that allows the Glue job role in account A to read the bucket.  
+C. Create IAM users in account B and give their access keys to the Glue job in account A.  
+D. Enable S3 Transfer Acceleration on the bucket so the cross-account request is accepted.  
 
 ### Q5
 
@@ -47,9 +47,9 @@ A critical Lambda function is intermittently throttled (HTTP 429) because anothe
 What should the engineer do?
 
 A. Configure reserved concurrency for the critical function.  
-B. Increase the critical function memory.  
-C. Increase the other function timeout.  
-D. Place the critical function in a VPC.  
+B. Increase the critical function's memory so that it finishes sooner and frees concurrency.  
+C. Increase the other function's timeout so that it releases environments more gradually.  
+D. Place the critical function in a VPC so that it has its own pool of concurrency.  
 
 ### Q6
 
@@ -77,70 +77,70 @@ E. Create a materialized view for the repeated aggregation.
 Changes in an Amazon RDS for MySQL database must be replicated continuously into an S3 data lake as Parquet, with minimal operations and no custom code.
 Which solution is BEST?
 
-A. A scheduled Lambda function that exports tables.  
+A. A scheduled Lambda function that exports the changed tables to S3 every few minutes.  
 B. AWS DMS with full load plus CDC, using S3 as the target with Parquet format.  
-C. An EMR cluster running Sqoop.  
-D. A DataSync task.  
+C. An EMR cluster that runs Sqoop imports into S3 on a schedule.  
+D. An AWS DataSync task that copies the database files to the S3 bucket.  
 
 ### Q9
 
 A nightly EMR Spark job can tolerate node loss but must not lose data. The company wants the lowest cost.
 Which cluster configuration is BEST?
 
-A. All Spot Instances, including primary and core nodes.  
-B. All On-Demand Instances.  
-C. On-Demand primary and core nodes, with Spot Instances for task nodes.  
-D. A single node running everything.  
+A. All Spot Instances, including the primary and core nodes, to maximize savings.  
+B. All On-Demand Instances, with a Savings Plan covering the whole cluster.  
+C. On-Demand primary and core nodes, with Spot Instances for the task nodes.  
+D. A single large node that runs the primary, core and task roles together.  
 
 ### Q10
 
 A company wants to crawl and catalog tables in an on-premises PostgreSQL database reachable over AWS Direct Connect from a VPC.
 What should the data engineer create?
 
-A. A Glue JDBC connection configured with the VPC, subnet, and security group, used by a crawler.  
-B. An S3 event notification.  
-C. A Kinesis stream.  
-D. A Lake Formation LF-tag.  
+A. A Glue JDBC connection configured with VPC, subnet and security group, used by a crawler.  
+B. An S3 event notification that starts a crawler when the database changes.  
+C. A Kinesis data stream that carries the database schema to the Glue Data Catalog.  
+D. A Lake Formation LF-tag on the database that lets the crawler reach the source.  
 
 ### Q11
 
 A Lambda function consumes a Kinesis stream with 4 shards. The function is fast but the GetRecords.IteratorAgeMilliseconds metric keeps rising during peaks. The team wants more throughput without resharding.
 What should be changed?
 
-A. Increase the function memory only.  
-B. Increase the event source mapping ParallelizationFactor (up to 10 concurrent batches per shard).  
-C. Disable batching.  
-D. Reduce the batch size to 1.  
+A. Increase the function's memory only, because its code already runs fast enough.  
+B. Increase the event source mapping's ParallelizationFactor (up to 10 batches per shard).  
+C. Disable batching so that each record is processed by its own invocation.  
+D. Reduce the batch size to 1 so that each invocation finishes sooner.  
 
 ### Q12
 
 Analysts must read only tables in the sales schema of a Redshift cluster. Permissions should be managed for groups of users, not individually.
 What should the administrator do?
 
-A. Grant the analysts the Redshift superuser role.  
-B. Make the sales schema public.  
-C. Create a Redshift role, GRANT USAGE on the schema and SELECT on its tables to the role, and assign users to the role.  
-D. Share the admin password.  
+A. Grant the analysts the Redshift superuser privilege so that they can read every schema.  
+B. Make the sales schema public so that all database users can query it.  
+C. Create a Redshift role, grant schema USAGE and table SELECT to it, and assign the users.  
+D. Create one shared database user for the analysts and distribute its password.  
 
 ### Q13
 
 A data transformation is a custom Python container that runs for about 6 hours per batch. The team wants a serverless way to run it as part of a Step Functions workflow.
 Which solution is BEST?
 
-A. An Amazon ECS task on AWS Fargate invoked with the Step Functions ECS integration (.sync).  
-B. An AWS Lambda function.  
-C. An EC2 instance that is left running.  
-D. An API Gateway endpoint.  
+A. An Amazon ECS task on AWS Fargate, started through the Step Functions .sync integration.  
+B. An AWS Lambda function with the maximum memory and timeout settings.  
+C. An EC2 instance that is left running and polls a queue for new batches.  
+D. An API Gateway endpoint that triggers the container on each request.  
 
 ### Q14
 
 Application logs must be searchable within seconds with dashboards, and the team accepts managing index retention.
 Which pipeline is BEST?
 
-A. Logs to S3 queried by Athena.  
-B. Logs to Redshift via nightly COPY.  
-C. Logs to DynamoDB.  
-D. Logs streamed through Amazon Data Firehose to Amazon OpenSearch Service.  
+A. Logs written to S3 and queried with Athena whenever someone needs to search.  
+B. Logs loaded into Redshift through a nightly COPY job and queried there.  
+C. Logs written to a DynamoDB table indexed by timestamp.  
+D. Logs streamed through Amazon Data Firehose into Amazon OpenSearch Service.  
 
 ### Q15
 
@@ -178,9 +178,9 @@ E. Replicate the S3 bucket to the recipient account.
 An analyst wants to join data in S3 with a table in Amazon RDS for MySQL using Athena, without copying the RDS data.
 What should be used?
 
-A. A Glue crawler on RDS only.  
-B. Redshift UNLOAD.  
-C. An S3 Select query.  
+A. A Glue crawler that catalogs the RDS tables so they appear next to the S3 data.  
+B. A Redshift UNLOAD of the RDS table into S3 before each query.  
+C. An S3 Select query over the exported RDS table.  
 D. Athena federated query with a data source connector (Lambda).  
 
 ### Q19
@@ -188,10 +188,10 @@ D. Athena federated query with a data source connector (Lambda).
 Each salesperson viewing an Amazon Quick (QuickSight) dashboard must see only the rows for their own region.
 Which feature is BEST?
 
-A. Row-level security using a permissions dataset that maps users to regions.  
-B. Separate dashboards per user.  
-C. Share the dashboard publicly.  
-D. Column-level security only.  
+A. Row-level security with a permissions dataset that maps users to regions.  
+B. A separate dashboard for each salesperson with its own filter.  
+C. Share the dashboard publicly and rely on a region filter control.  
+D. Column-level security that hides the other regions' columns.  
 
 ### Q20
 
@@ -208,10 +208,10 @@ D. Switch the job to Python shell.
 Streaming writes create thousands of small files in an Apache Iceberg table queried with Athena, and queries are slowing.
 What should the engineer do?
 
-A. Convert the table to CSV.  
-B. Drop and recreate the table daily.  
-C. Schedule table compaction (for example Athena OPTIMIZE ... REWRITE DATA USING BIN_PACK or S3 Tables automatic compaction).  
-D. Add more partitions by minute.  
+A. Convert the table to CSV so the many small files are easier to read.  
+B. Drop and recreate the table every day from the raw data.  
+C. Schedule table compaction (for example Athena OPTIMIZE ... BIN_PACK or S3 Tables maintenance).  
+D. Add more partitions by minute so each query reads fewer files.  
 
 ### Q22
 

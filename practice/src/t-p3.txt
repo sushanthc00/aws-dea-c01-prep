@@ -1,10 +1,10 @@
 @@Q 48 | MC | D3 | 3.1.1 | M | B
 An Airflow DAG on MWAA must wait for a partner's file to appear in S3 before starting downstream tasks, without holding a worker slot during the wait.
 What is the BEST approach?
-A. Sleep in a Python task for 24 hours.
-B. Use an S3 key sensor (preferably in deferrable mode) as the first task.
-C. Run the DAG every second.
-D. Poll with a Lambda function inside the DAG body.
+A. Sleep in a Python task for 24 hours and then check for the file.
+B. Use an S3 key sensor, preferably in deferrable mode, as the first task.
+C. Run the DAG every second so that the file is detected quickly.
+D. Poll with a Lambda function that is invoked from inside the DAG body.
 @@E
 - Correct B: Sensors wait for the object, and deferrable sensors free worker slots while waiting.
 - A: Wastes a worker and is brittle.
@@ -13,10 +13,10 @@ D. Poll with a Lambda function inside the DAG body.
 @@Q 49 | MC | D3 | 3.1.4 | M | D
 An EMR cluster's workload varies throughout the day, leaving nodes idle at night and starving jobs at peak.
 Which feature should be enabled?
-A. Fixed cluster size at the peak.
-B. Termination protection.
-C. A larger primary node.
-D. EMR managed scaling (or auto scaling policies).
+A. A fixed cluster size that is provisioned for the daily peak.
+B. Termination protection, which keeps nodes running until jobs finish.
+C. A larger primary node that can schedule more work during peaks.
+D. EMR managed scaling, or auto scaling policies on the instance groups.
 @@E
 - Correct D: Managed scaling adjusts cluster capacity to workload.
 - A: Pays for idle nodes.
@@ -26,9 +26,9 @@ D. EMR managed scaling (or auto scaling policies).
 A public data API backed by Lambda is occasionally overwhelmed by a few clients.
 How can the engineer protect the backend?
 A. Configure API Gateway throttling and usage plans with API keys.
-B. Remove authentication.
-C. Increase Lambda timeout.
-D. Disable logging.
+B. Remove authentication so that the clients' requests are not retried.
+C. Increase the Lambda timeout so that slow requests complete.
+D. Disable logging to reduce the overhead of each request.
 @@E
 - Correct A: Throttles and usage plans limit request rates per client.
 - B: Worsens exposure.
@@ -37,10 +37,10 @@ D. Disable logging.
 @@Q 51 | MC | D3 | 3.1.8 | M | C
 Every file uploaded to a landing bucket must be validated for format, and invalid files moved to a quarantine prefix automatically.
 Which solution is BEST?
-A. A daily manual review.
-B. An EC2 instance polling the bucket.
+A. A daily manual review of the landing bucket by the data team.
+B. An EC2 instance that polls the bucket and moves invalid files.
 C. An S3 event notification that triggers a Lambda function to validate and move the file.
-D. A scheduled Redshift query.
+D. A scheduled Redshift query that lists the files and flags invalid ones.
 @@E
 - Correct C: Event-driven Lambda reacts to each upload with no servers.
 - A: Manual.
@@ -61,10 +61,10 @@ E. A requirement to run servers.
 @@Q 53 | MC | D3 | 3.2.2 | M | B
 An analyst needs to find duplicate order_id values in an S3 table queried with Athena.
 Which query is correct?
-A. SELECT order_id FROM orders ORDER BY order_id;
+A. SELECT order_id FROM orders ORDER BY order_id ASC LIMIT 100;
 B. SELECT order_id, COUNT(*) FROM orders GROUP BY order_id HAVING COUNT(*) > 1;
-C. SELECT DISTINCT order_id FROM orders;
-D. DELETE FROM orders;
+C. SELECT DISTINCT order_id, COUNT(order_id) FROM orders;
+D. SELECT order_id FROM orders WHERE order_id IS NOT NULL;
 @@E
 - Correct B: Grouping with HAVING COUNT(*) > 1 lists duplicated keys.
 - A: Lists all values.
@@ -73,10 +73,10 @@ D. DELETE FROM orders;
 @@Q 54 | MC | D3 | 3.2.3 | M | D
 Analysts should query only the active customers from a large table, without copying data or exposing the other rows' logic.
 What should the engineer create?
-A. A second S3 copy updated nightly.
-B. A DynamoDB table.
-C. A Glue crawler.
-D. A view (Athena view in the Data Catalog or Redshift view) that filters to active customers.
+A. A second copy of the table in S3 that is refreshed every night.
+B. A DynamoDB table that stores only the active customers.
+C. A Glue crawler that creates a table from the active customers' files.
+D. A view (an Athena view or a Redshift view) that filters to active customers.
 @@E
 - Correct D: Views present a filtered logical dataset with no extra copy.
 - A: Duplicates data and adds a pipeline.
@@ -85,10 +85,10 @@ D. A view (Athena view in the Data Catalog or Redshift view) that filters to act
 @@Q 55 | MC | D3 | 3.3.7 | M | A
 The team wants a CloudWatch alarm whenever a Lambda function writes more than 5 log lines containing "ERROR" in 5 minutes.
 What should be configured?
-A. A CloudWatch Logs metric filter on the log group and an alarm on the metric.
-B. A CloudTrail trail.
-C. An S3 lifecycle rule.
-D. A Redshift query.
+A. A CloudWatch Logs metric filter on the log group, with an alarm on the metric.
+B. A CloudTrail trail that records each Lambda invocation and its result.
+C. An S3 lifecycle rule on the log bucket that counts the error lines.
+D. A scheduled Redshift query over the logs that publishes the count.
 @@E
 - Correct A: Metric filters turn matching log lines into metrics that alarms evaluate.
 - B: Records API calls.
@@ -97,10 +97,10 @@ D. A Redshift query.
 @@Q 56 | MC | D3 | 3.3.6 | M | C
 A Glue Python job fails with an import error for a third-party library that is not included in the Glue runtime.
 What should the engineer do?
-A. Rewrite the job in Scala.
-B. Increase the worker type.
-C. Supply the library with the --additional-python-modules job parameter (or an S3 wheel/zip via --extra-py-files).
-D. Disable job bookmarks.
+A. Rewrite the job in Scala so that the library is available in the runtime.
+B. Increase the worker type so that the library can be installed on larger nodes.
+C. Supply the library with --additional-python-modules (or an S3 wheel through --extra-py-files).
+D. Disable job bookmarks so that the job reinstalls its dependencies on each run.
 @@E
 - Correct C: Glue installs extra Python modules specified through job parameters.
 - A: Unnecessary.
@@ -109,10 +109,10 @@ D. Disable job bookmarks.
 @@Q 57 | MC | D3 | 3.4.2 | M | D
 A data quality requirement states that the email column must match a valid email pattern and contain no nulls, checked on every new file with no code.
 Which approach is BEST?
-A. A manual spreadsheet review.
-B. S3 Select.
-C. CloudTrail.
-D. A Glue DataBrew data quality ruleset (or Glue Data Quality) with the checks applied to the dataset.
+A. A manual spreadsheet review of each new file by the data team.
+B. S3 Select queries that filter the invalid emails when the file is read.
+C. CloudTrail logs that show which files contained invalid emails.
+D. A Glue DataBrew data quality ruleset (or Glue Data Quality) applied to the dataset.
 @@E
 - Correct D: Rulesets define checks and report pass or fail without code.
 - A: Manual.
@@ -120,10 +120,10 @@ D. A Glue DataBrew data quality ruleset (or Glue Data Quality) with the checks a
 - C: Logs API calls.
 @@Q 58 | MC | D4 | 4.1.2 | M | B
 A new AWS Glue job needs an IAM role. Which trust relationship is required?
-A. Trust the s3.amazonaws.com service principal.
-B. Trust the glue.amazonaws.com service principal so Glue can assume the role.
-C. Trust the root user of another account.
-D. Trust ec2.amazonaws.com.
+A. Trust the s3.amazonaws.com service principal, because the job reads from S3.
+B. Trust the glue.amazonaws.com service principal so that Glue can assume the role.
+C. Trust the root user of another account that owns the job's script.
+D. Trust the ec2.amazonaws.com service principal, because Glue runs on EC2.
 @@E
 - Correct B: The role's trust policy must allow Glue to assume it.
 - A: S3 is not the one assuming the role.
@@ -131,10 +131,10 @@ D. Trust ec2.amazonaws.com.
 - D: EC2 is not used by Glue jobs.
 @@Q 59 | MC | D4 | 4.1.4 | M | A
 A Lambda function reads from a Kinesis stream and writes logs. What permissions should its execution role have for least privilege?
-A. Kinesis read actions (GetRecords, GetShardIterator, DescribeStream, ListShards) on that stream and CloudWatch Logs write actions.
-B. kinesis:* on all streams.
-C. AdministratorAccess.
-D. Only s3:GetObject.
+A. Kinesis read actions (GetRecords, GetShardIterator, DescribeStream, ListShards) on that stream, and logs write actions.
+B. kinesis:* on all streams, plus logs:* on all log groups in the account.
+C. The AdministratorAccess managed policy, so the function can read from any service.
+D. Only s3:GetObject on the bucket that the function writes to, plus basic Lambda execution.
 @@E
 - Correct A: Scoped to needed actions and resources.
 - B: Broader than needed.
@@ -143,9 +143,9 @@ D. Only s3:GetObject.
 @@Q 60 | MC | D4 | 4.1.6 | M | C
 Which statement correctly contrasts a managed service such as Amazon RDS with a self-managed database on EC2?
 A. AWS patches the operating system of a database that runs on EC2.
-B. The customer patches the underlying OS of an RDS instance.
-C. For RDS, AWS manages the underlying OS and infrastructure patching, while on EC2 the customer patches the OS and database.
-D. Neither requires patching.
+B. The customer patches the underlying operating system of an RDS instance.
+C. RDS: AWS manages OS and infrastructure patching. EC2: the customer patches OS and database.
+D. Neither option requires patching because both are covered by AWS.
 @@E
 - Correct C: Managed services shift infrastructure and OS maintenance to AWS.
 - A: On EC2, the customer is responsible.
@@ -154,10 +154,10 @@ D. Neither requires patching.
 @@Q 61 | MC | D4 | 4.1.7 | H | D
 Two business units want separate governance boundaries and each team wants its own collaboration space with its own members, compute, and data assets inside Amazon SageMaker Unified Studio.
 Which constructs should be used?
-A. S3 buckets only.
-B. Glue crawlers.
-C. CloudFront distributions.
-D. Domain units to organize the business units and projects for each team's workspace within the domain.
+A. S3 buckets with one prefix for each business unit and team.
+B. Glue crawlers with one crawler for each team.
+C. CloudFront distributions with one distribution for each business unit.
+D. Domain units for the business units and projects for each team's workspace.
 @@E
 - Correct D: Domains hold governance settings, domain units organize groups, and projects are team workspaces.
 - A: Buckets do not provide workspaces.
@@ -166,10 +166,10 @@ D. Domain units to organize the business units and projects for each team's work
 @@Q 62 | MC | D4 | 4.2.5 | H | A
 Hundreds of projects each have their own S3 prefix and team. The company wants one IAM policy that lets a user access only resources tagged for the same team, without writing a policy per team.
 Which approach is BEST?
-A. Attribute-based access control comparing aws:PrincipalTag/team with the resource tag team in policy conditions.
-B. One policy per team.
-C. Administrator access for everyone.
-D. A shared access key.
+A. ABAC that compares aws:PrincipalTag/team with the resource tag team.
+B. One IAM policy for each team, listing the team's prefixes.
+C. Administrator access for everyone, with a naming convention for projects.
+D. A shared access key for each team that is stored in Parameter Store.
 @@E
 - Correct A: ABAC scales by matching principal and resource tags.
 - B: Does not scale.
@@ -178,10 +178,10 @@ D. A shared access key.
 @@Q 63 | MC | D4 | 4.3.3 | H | C
 An encrypted Redshift cluster's snapshots must be automatically copied to another Region for disaster recovery.
 What additional setup is required?
-A. Disable encryption.
-B. Share the snapshot publicly.
-C. Create a snapshot copy grant for a KMS key in the destination Region and enable cross-Region snapshot copy.
-D. Use S3 Select.
+A. Disable encryption on the cluster before enabling snapshot copy.
+B. Share the snapshot publicly so that the other Region can restore it.
+C. Create a snapshot copy grant for a KMS key in the destination Region and enable cross-Region copy.
+D. Use S3 Select to export the snapshot contents to the other Region.
 @@E
 - Correct C: Encrypted snapshot copy needs a KMS key in the destination Region authorized through a snapshot copy grant.
 - A: Violates policy.
@@ -190,10 +190,10 @@ D. Use S3 Select.
 @@Q 64 | MC | D4 | 4.3.4 | M | B
 Regulations require that sensitive files are never readable by AWS services even in transit staging, so the company must encrypt data before it leaves its premises.
 Which approach applies?
-A. Rely on S3 default encryption only.
-B. Client-side encryption of the data before upload (for example with an AWS Encryption SDK or KMS-generated data keys).
-C. Use HTTP instead of HTTPS.
-D. Make the bucket public.
+A. Rely on S3 default encryption only, which encrypts objects after S3 receives them.
+B. Client-side encryption of the data before upload, for example with the AWS Encryption SDK.
+C. Use plain HTTP so that the data is not decrypted by an intermediate proxy.
+D. Make the bucket public so that no service needs credentials to read the data.
 @@E
 - Correct B: Client-side encryption protects data before it is sent.
 - A: Encrypts after S3 receives it.
@@ -202,10 +202,10 @@ D. Make the bucket public.
 @@Q 65 | MC | D4 | 4.4.1 | M | D
 The security team wants an immediate alert when anyone disables or schedules deletion of a KMS key.
 Which design is BEST?
-A. A weekly manual review of the console.
-B. S3 Inventory.
-C. An S3 lifecycle rule.
-D. An EventBridge rule matching CloudTrail management events (DisableKey, ScheduleKeyDeletion) that notifies an SNS topic.
+A. A weekly manual review of the KMS console by the security team.
+B. S3 Inventory reports that list the keys that are currently disabled.
+C. An S3 lifecycle rule that deletes objects encrypted with disabled keys.
+D. An EventBridge rule on CloudTrail management events (DisableKey, ScheduleKeyDeletion) that publishes to SNS.
 @@E
 - Correct D: CloudTrail records KMS API calls and EventBridge can alert on them.
 - A: Slow.
@@ -214,10 +214,10 @@ D. An EventBridge rule matching CloudTrail management events (DisableKey, Schedu
 @@Q 66 | MC | D4 | 4.4.4 | M | B
 CloudTrail logs are delivered to an S3 bucket, and the team wants low-cost ad hoc SQL analysis.
 What should be created?
-A. A Redshift cluster.
-B. An Athena table over the CloudTrail bucket (using partition projection) to query the logs.
-C. A DynamoDB table.
-D. An EMR cluster running continuously.
+A. A Redshift cluster that loads the logs every night with COPY.
+B. An Athena table over the CloudTrail bucket, using partition projection.
+C. A DynamoDB table that stores each log event as an item.
+D. An EMR cluster that runs continuously and parses the logs.
 @@E
 - Correct B: Athena queries S3 logs directly and charges per scan.
 - A: Fixed cost for occasional queries.
@@ -226,10 +226,10 @@ D. An EMR cluster running continuously.
 @@Q 67 | MC | D4 | 4.4.5 | M | C
 Application servers produce 50 TB of raw logs per day that must be parsed and aggregated before audit reporting.
 Which approach is MOST appropriate?
-A. A single Lambda function.
-B. Manual scripts on a laptop.
-C. A distributed processing framework such as Spark on Amazon EMR or AWS Glue reading from S3.
-D. Amazon SNS.
+A. A single Lambda function that parses each log file in turn.
+B. Manual scripts that are run on an engineer's laptop.
+C. A distributed framework such as Spark on EMR or AWS Glue, reading from S3.
+D. Amazon SNS topics that fan the log lines out to many subscribers.
 @@E
 - Correct C: Large volumes need distributed processing.
 - A: Time and memory limits.
@@ -250,10 +250,10 @@ E. It publishes findings that can be sent to EventBridge and Security Hub.
 @@Q 69 | MC | D4 | 4.5.5 | H | A
 Data of EU residents must remain within the EU, and the disaster recovery copy must also stay in an EU Region.
 Which combination is BEST?
-A. SCPs that deny Regions outside the approved EU Regions, replication only to another EU Region, and Region-scoped KMS keys.
-B. Cross-Region replication to any Region with the lowest cost.
-C. Replicating to the US for durability.
-D. Making buckets public.
+A. SCPs that deny Regions outside the approved EU Regions, replication to EU Regions only, and Region-scoped KMS keys.
+B. Cross-Region replication to whichever Region has the lowest storage cost.
+C. Replicating to a US Region for durability, with strong encryption.
+D. Making the buckets public so that the EU regulator can audit them.
 @@E
 - Correct A: Preventive guardrails plus in-jurisdiction replication keep data and keys within approved Regions.
 - B: Cost-driven placement violates residency.
@@ -261,10 +261,10 @@ D. Making buckets public.
 - D: Irrelevant and insecure.
 @@Q 70 | MC | D4 | 4.5.6 | H | D
 A consumer project requests access to a published data asset in Amazon SageMaker Catalog. How is access normally granted for a managed asset?
-A. The consumer emails the producer for an access key.
-B. The asset is copied to a public bucket.
-C. The consumer gets a shared admin password.
-D. The data owner approves the subscription, and the catalog provisions the grant (for example through Lake Formation or Redshift permissions).
+A. The consumer emails the producer, who creates and sends an access key.
+B. The asset is copied to a public bucket where the consumer can read it.
+C. The consumer is given a shared administrator password for the producer's account.
+D. The owner approves the subscription and the catalog provisions the grant, for example through Lake Formation.
 @@E
 - Correct D: Subscription approval triggers governed grants for managed assets.
 - A: Bypasses governance.

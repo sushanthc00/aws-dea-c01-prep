@@ -17,20 +17,20 @@ D. A DynamoDB table with provisioned capacity.
 A read-heavy reporting workload overloads the primary Amazon Aurora PostgreSQL writer. Reports tolerate seconds of replica lag.
 What should the engineer configure?
 
-A. A bigger writer and route reports to it.  
-B. Convert Aurora to DynamoDB.  
-C. Aurora Replicas and the reader endpoint for reporting connections.  
-D. Disable replication.  
+A. A bigger writer instance, with the reports routed to it as well.  
+B. Convert the database to DynamoDB so that reads scale automatically.  
+C. Aurora Replicas and the reader endpoint for the reporting connections.  
+D. Disable replication so that the writer has more capacity for reports.  
 
 ### Q27
 
 Concurrent transactions in Amazon RDS for MySQL occasionally fail with deadlock errors.
 What is the BEST approach?
 
-A. Disable transactions.  
-B. Increase the storage size.  
-C. Move to a smaller instance.  
-D. Access rows in a consistent order, keep transactions short, and retry the transaction on a deadlock error.  
+A. Disable transactions so that rows are never locked while the statements run.  
+B. Increase the storage size so that lock tables have more room.  
+C. Move to a smaller instance class so that fewer sessions run concurrently.  
+D. Access rows in a consistent order, keep transactions short, and retry on deadlock errors.  
 
 ### Q28
 
@@ -38,38 +38,38 @@ Dashboards repeatedly aggregate data in S3 queried through Redshift Spectrum ext
 Which feature can speed repeated queries?
 
 A. A materialized view over the external table, refreshed on a schedule.  
-B. DISTSTYLE ALL on the external table.  
-C. VACUUM on the external table.  
-D. A bigger Athena workgroup.  
+B. DISTSTYLE ALL on the external table so that every node holds a copy.  
+C. VACUUM on the external table to reclaim space and re-sort the data.  
+D. A bigger Athena workgroup to speed up the Spectrum scans.  
 
 ### Q29
 
 Spark jobs on Amazon EMR must use the same table definitions that Athena and Glue use.
 What should be configured?
 
-A. A separate Hive metastore per cluster.  
-B. EMR configured to use the AWS Glue Data Catalog as its Hive metastore.  
-C. Copy schemas manually into each job.  
-D. Store schemas in a text file.  
+A. A separate Hive metastore for each cluster, synchronized with scripts.  
+B. Configure EMR to use the AWS Glue Data Catalog as its Hive metastore.  
+C. Copy the schemas manually into each Spark job at deployment time.  
+D. Store the schemas in a text file in S3 that each job parses.  
 
 ### Q30
 
 A Glue crawler runs nightly. After an upstream change, the crawler altered a production table's columns and broke downstream queries. The team wants schema changes reviewed first.
 What should be configured?
 
-A. Run the crawler hourly.  
-B. Delete the table each night.  
-C. Set the crawler's schema change policy to log changes instead of updating the table, then apply approved changes manually.  
-D. Disable the Glue Data Catalog.  
+A. Run the crawler hourly so that schema changes are picked up faster.  
+B. Delete and recreate the table each night from the crawler results.  
+C. Set the crawler's schema change policy to log changes, then apply approved changes manually.  
+D. Disable the Glue Data Catalog and define the schemas in each query.  
 
 ### Q31
 
 Query results from Redshift must be exported to S3 as Parquet, partitioned by sale_date, in parallel.
 Which command should be used?
 
-A. COPY with FORMAT AS PARQUET.  
-B. INSERT INTO s3.  
-C. VACUUM.  
+A. COPY with FORMAT AS PARQUET into a table, then export it with a SELECT statement.  
+B. INSERT INTO an S3 path with a SELECT statement.  
+C. VACUUM the table with a PARQUET option after the export.  
 D. UNLOAD with FORMAT PARQUET and PARTITION BY (sale_date).  
 
 ### Q32
@@ -77,30 +77,30 @@ D. UNLOAD with FORMAT PARQUET and PARTITION BY (sale_date).
 A customer requests erasure of personal data stored in an Apache Iceberg table in the S3 data lake queried by Athena.
 What is the BEST approach?
 
-A. Run a row-level DELETE for the customer, then expire old snapshots and remove orphaned files so deleted data is no longer retrievable.  
-B. Delete only the metadata file.  
-C. Wait for S3 lifecycle to remove the bucket.  
-D. Disable queries for the customer.  
+A. Run a row-level DELETE for the customer, then expire old snapshots and remove orphaned files.  
+B. Delete only the table's current metadata file so that the rows can no longer be found.  
+C. Wait for the S3 lifecycle rule to remove the objects at the end of the retention period.  
+D. Disable queries for the customer's identifier in the BI tool.  
 
 ### Q33
 
 An S3 bucket accumulates abandoned incomplete multipart uploads that add storage cost, and logs older than 90 days must be removed.
 What should be configured?
 
-A. A bucket policy.  
-B. A lifecycle configuration with an expiration rule at 90 days and an AbortIncompleteMultipartUpload rule.  
-C. S3 Transfer Acceleration.  
-D. S3 Inventory.  
+A. A bucket policy that denies uploads to the logs prefix after 90 days.  
+B. A lifecycle configuration with a 90-day expiration rule and an AbortIncompleteMultipartUpload rule.  
+C. S3 Transfer Acceleration on the bucket to finish uploads sooner.  
+D. S3 Inventory reports that list the old objects for manual deletion.  
 
 ### Q34
 
 A DynamoDB table has PK customerId and SK orderDate. A new requirement is to query orders by orderStatus across all customers, sorted by orderDate.
 What should be added?
 
-A. A scan with a filter expression.  
-B. A local secondary index on orderStatus.  
+A. A scan with a filter expression on orderStatus, run on a schedule.  
+B. A local secondary index on orderStatus, added to the existing table.  
 C. A global secondary index with partition key orderStatus and sort key orderDate.  
-D. A second table copy updated by hand.  
+D. A second table copy that is updated by hand whenever the status changes.  
 
 ### Q35
 
@@ -137,10 +137,10 @@ E. It always returns exact nearest neighbors.
 A bad write corrupted an Iceberg table. The team needs to inspect and restore the table to its state from yesterday.
 Which Iceberg capability applies?
 
-A. Primary key constraints.  
+A. Primary key constraints, which are enforced to prevent bad rows.  
 B. Snapshots, which enable time travel and rollback to an earlier snapshot.  
-C. B-tree indexes.  
-D. Foreign keys.  
+C. B-tree indexes on each column, which are rebuilt after every write.  
+D. Foreign keys, which reject writes that reference missing rows.  
 
 ### Q39
 
@@ -148,9 +148,9 @@ Athena query planning is slow because a Glue table has millions of partitions an
 What can improve planning time?
 
 A. Create partition indexes in the Glue Data Catalog (or use partition projection).  
-B. Increase the Athena query timeout.  
-C. Add an S3 lifecycle rule.  
-D. Decrease the file size.  
+B. Increase the Athena query timeout so that planning has more time to finish.  
+C. Add an S3 lifecycle rule that moves old partitions to a cheaper class.  
+D. Decrease the file size so that each partition holds fewer rows.  
 
 ### Q40
 
@@ -167,10 +167,10 @@ D. AWS Glue.
 An upstream system changed a column from integer to string, and the Glue job now fails or produces mixed types.
 What is the BEST way to handle the changing data characteristic?
 
-A. Ignore the failures.  
-B. Delete the column from the target.  
-C. Use ResolveChoice (for example cast to string) in the Glue DynamicFrame and manage schema versions with the Schema Registry or catalog.  
-D. Disable the job.  
+A. Ignore the failures and rerun the job when the upstream team fixes the column.  
+B. Delete the column from the target so that the type conflict disappears.  
+C. Use ResolveChoice (for example cast to string) and manage schema versions in a schema registry.  
+D. Disable the job until the upstream system returns to the previous type.  
 
 ### Q42
 
@@ -187,10 +187,10 @@ D. DynamoDB global tables.
 A script using the AWS SDK must list all objects in a bucket with more than 1,000 keys.
 What should the developer do?
 
-A. Use the SDK paginator (or loop on the continuation token).  
-B. Call list_objects_v2 once.  
-C. Increase MaxKeys above 1,000.  
-D. Use a larger instance.  
+A. Use the SDK paginator, or loop on the continuation token.  
+B. Call list_objects_v2 once and read the full result set.  
+C. Increase MaxKeys above 1,000 so that one call returns every key.  
+D. Use a larger instance so that the single call returns more results.  
 
 ### Q44
 
@@ -217,17 +217,17 @@ D. Amazon Redshift Serverless.
 Auditors need application logs from CloudWatch Logs delivered to S3 for long-term, low-cost querying.
 What should be done?
 
-A. Export logs to S3 (an export task or a subscription filter through Firehose) and query with Athena.  
-B. Take screenshots.  
-C. Delete older logs.  
-D. Stop logging.  
+A. Export the logs to S3 (an export task, or a subscription filter through Firehose) and query with Athena.  
+B. Take screenshots of the CloudWatch console each month and file them.  
+C. Delete older log events so that only recent entries need review.  
+D. Stop logging after the audit period to reduce the volume.  
 
 ### Q47
 
 Security requires a record of connections, user changes, and queries run on a Redshift cluster.
 What should be enabled?
 
-A. Concurrency scaling.  
-B. Redshift audit logging to S3 or CloudWatch Logs (and the enable_user_activity_logging parameter for query text).  
-C. Elastic resize.  
-D. Spectrum.  
+A. Concurrency scaling, which records each query that the extra clusters run.  
+B. Redshift audit logging to S3 or CloudWatch Logs, with enable_user_activity_logging.  
+C. Elastic resize, which keeps a history of all connections and queries.  
+D. Redshift Spectrum, which logs the queries that read external tables.  

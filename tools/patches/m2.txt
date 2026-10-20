@@ -1,0 +1,168 @@
+m2|1|A|A Lambda function that writes each record to its own S3 object under a customer prefix.
+m2|1|B|An AWS Glue job that repartitions the delivered data by customer_id every hour.
+m2|1|C|Firehose dynamic partitioning, extracting customer_id from each record to build the S3 prefix.
+m2|1|D|A separate Firehose delivery stream for each customer, each with its own S3 prefix.
+m2|4|A|Add the Glue service principal glue.amazonaws.com to the bucket policy in account B.
+m2|4|B|Add a bucket policy in account B that allows the Glue job role in account A to read the bucket.
+m2|4|C|Create IAM users in account B and give their access keys to the Glue job in account A.
+m2|4|D|Enable S3 Transfer Acceleration on the bucket so the cross-account request is accepted.
+m2|5|A|Configure reserved concurrency for the critical function.
+m2|5|B|Increase the critical function's memory so that it finishes sooner and frees concurrency.
+m2|5|C|Increase the other function's timeout so that it releases environments more gradually.
+m2|5|D|Place the critical function in a VPC so that it has its own pool of concurrency.
+m2|8|A|A scheduled Lambda function that exports the changed tables to S3 every few minutes.
+m2|8|B|AWS DMS with full load plus CDC, using S3 as the target with Parquet format.
+m2|8|C|An EMR cluster that runs Sqoop imports into S3 on a schedule.
+m2|8|D|An AWS DataSync task that copies the database files to the S3 bucket.
+m2|9|A|All Spot Instances, including the primary and core nodes, to maximize savings.
+m2|9|B|All On-Demand Instances, with a Savings Plan covering the whole cluster.
+m2|9|C|On-Demand primary and core nodes, with Spot Instances for the task nodes.
+m2|9|D|A single large node that runs the primary, core and task roles together.
+m2|10|A|A Glue JDBC connection configured with VPC, subnet and security group, used by a crawler.
+m2|10|B|An S3 event notification that starts a crawler when the database changes.
+m2|10|C|A Kinesis data stream that carries the database schema to the Glue Data Catalog.
+m2|10|D|A Lake Formation LF-tag on the database that lets the crawler reach the source.
+m2|11|A|Increase the function's memory only, because its code already runs fast enough.
+m2|11|B|Increase the event source mapping ParallelizationFactor (up to 10 concurrent batches per shard).
+m2|11|C|Disable batching so that each record is processed by its own invocation.
+m2|11|D|Reduce the batch size to 1 so that each invocation finishes sooner.
+m2|12|A|Grant the analysts the Redshift superuser privilege so that they can read every schema.
+m2|12|B|Make the sales schema public so that all database users can query it.
+m2|12|C|Create a Redshift role, grant schema USAGE and table SELECT to it, and assign the users.
+m2|12|D|Create one shared database user for the analysts and distribute its password.
+m2|13|A|An Amazon ECS task on AWS Fargate, started with the Step Functions ECS .sync integration.
+m2|13|B|An AWS Lambda function with the maximum memory and timeout settings.
+m2|13|C|An EC2 instance that is left running and polls a queue for new batches.
+m2|13|D|An API Gateway endpoint that triggers the container on each request.
+m2|14|A|Logs written to S3 and queried with Athena whenever someone needs to search.
+m2|14|B|Logs loaded into Redshift through a nightly COPY job and queried there.
+m2|14|C|Logs written to a DynamoDB table indexed by timestamp.
+m2|14|D|Logs streamed through Amazon Data Firehose into Amazon OpenSearch Service.
+m2|18|A|A Glue crawler that catalogs the RDS tables so they appear next to the S3 data.
+m2|18|B|A Redshift UNLOAD of the RDS table into S3 before each query.
+m2|18|C|An S3 Select query over the exported RDS table.
+m2|18|D|Athena federated query with a data source connector (Lambda).
+m2|19|A|Row-level security with a permissions dataset that maps users to regions.
+m2|19|B|A separate dashboard for each salesperson with its own filter.
+m2|19|C|Share the dashboard publicly and rely on a region filter control.
+m2|19|D|Column-level security that hides the other regions' columns.
+m2|21|A|Convert the table to CSV so the many small files are easier to read.
+m2|21|B|Drop and recreate the table every day from the raw data.
+m2|21|C|Schedule table compaction (for example Athena OPTIMIZE ... BIN_PACK, or S3 Tables maintenance).
+m2|21|D|Add more partitions by minute so each query reads fewer files.
+m2|23|A|An SQS standard queue, with the account ID stored in each message.
+m2|23|B|An SQS FIFO queue using the account ID as MessageGroupId, with batching or high throughput.
+m2|23|C|An SNS standard topic with one SQS subscriber per account.
+m2|23|D|A single-shard Kinesis stream with randomly generated partition keys.
+m2|24|A|COPY the 200 TB into the cluster before running the joins.
+m2|24|B|Use federated query against the S3 bucket.
+m2|24|C|Redshift Spectrum external tables registered in the Glue Data Catalog.
+m2|24|D|Replicate the data into Redshift with DMS.
+m2|25|A|Run the crawler more often so each run sees fewer mixed files.
+m2|25|B|Increase the crawler's DPUs so that it can infer schemas more accurately.
+m2|25|C|Disable the classifiers so that the crawler stops inferring formats.
+m2|25|D|Store the schemas under separate prefixes (or use exclusion patterns), one table per prefix.
+m2|26|A|Enable automatic key rotation on the customer managed key.
+m2|26|B|Create a new KMS key every year and update every application and alias.
+m2|26|C|Switch the services to an AWS owned key that AWS rotates for them.
+m2|26|D|Delete the key and recreate it with the same alias each year.
+m2|27|A|Increase the Lambda memory so that the insert finishes before the retry arrives.
+m2|27|B|Switch to a larger database instance so that duplicate inserts are rejected faster.
+m2|27|C|Make the write idempotent, such as a conditional insert or upsert keyed by object key and ETag.
+m2|27|D|Disable retries and accept that some events will be lost.
+m2|28|A|On-demand capacity with no other changes.
+m2|28|B|Provisioned capacity set at the daily peak, with no auto scaling.
+m2|28|C|Maximum reserved capacity, bought for ten times the current load.
+m2|28|D|Provisioned capacity with auto scaling, plus reserved capacity for the baseline.
+m2|30|A|Share one primary workgroup and review the query history each month.
+m2|30|B|One workgroup per team with a per-query data usage limit and data usage alarms to SNS.
+m2|30|C|Enable S3 Intelligent-Tiering on the source bucket for each team.
+m2|30|D|Create Redshift WLM queues for each team's Athena queries.
+m2|31|A|Delete the PII columns by hand before each load.
+m2|31|B|Encrypt the whole bucket with a customer managed KMS key.
+m2|31|C|Use Glue sensitive data detection in the job to find the PII and mask or hash it.
+m2|31|D|Run a Macie discovery job, which masks the PII it finds.
+m2|32|A|Three separate topics, with the producer publishing to the right one by type.
+m2|32|B|A Lambda function that inspects each message and forwards it to the right queue.
+m2|32|C|EventBridge Scheduler rules that poll the topic for each order type.
+m2|32|D|SNS subscription filter policies on a message attribute for each SQS subscription.
+m2|34|A|Short query acceleration with automatic WLM and query priorities.
+m2|34|B|Set DISTSTYLE ALL on the tables that the short queries use.
+m2|34|C|Add more S3 prefixes so that the queries read in parallel.
+m2|34|D|Move the interactive queries to a larger Athena workgroup.
+m2|35|A|Give the partners read access to the Athena console and the results bucket.
+m2|35|B|Amazon API Gateway with a Lambda function that runs or reads precomputed Athena results.
+m2|35|C|An EC2 web server that runs Spark against the S3 data for every request.
+m2|35|D|A public S3 bucket that holds the daily result files.
+m2|37|A|CloudTrail Insights to flag buckets that are created without encryption.
+m2|37|B|An AWS Config rule for S3 default encryption with automatic remediation (Systems Manager Automation).
+m2|37|C|Amazon Macie to detect and encrypt unencrypted objects.
+m2|37|D|S3 Transfer Acceleration to encrypt data in transit to the buckets.
+m2|38|A|Reduce the number of shards so that each shard receives more records.
+m2|38|B|Disable encryption on the stream to remove the KMS overhead per request.
+m2|38|C|Send each record to a different stream to spread the write load.
+m2|38|D|Batch records with PutRecords (or KPL aggregation) and retry with exponential backoff.
+m2|39|A|A CloudTrail trail that records the cluster's API activity.
+m2|39|B|An AWS Config rule that checks the cluster's storage configuration.
+m2|39|C|A CloudWatch alarm on PercentageDiskSpaceUsed that notifies an SNS topic.
+m2|39|D|An S3 lifecycle rule on the cluster's snapshot bucket.
+m2|40|A|Add the column to the table definition (ALTER TABLE ADD COLUMNS or a crawler update); older files return NULL.
+m2|40|B|Rewrite all historical files so that they include the new column.
+m2|40|C|Delete the older partitions and reload them with the new schema.
+m2|40|D|Recreate the database and register every partition again.
+m2|42|A|DISTSTYLE KEY on the card number column.
+m2|42|B|Concurrency scaling for the support team's queries.
+m2|42|C|Dynamic data masking policies attached to roles.
+m2|42|D|Redshift Spectrum external tables with a masked copy.
+m2|45|A|A single Lambda function that is allowed to run for 40 minutes.
+m2|45|B|An EC2 instance that runs a cron job calling the API.
+m2|45|C|An EMR cluster that is started for the nightly run.
+m2|45|D|An AWS Glue Python shell job started by a schedule.
+m2|46|A|Configure a partitioned JDBC read (partition column with bounds, or hashfield/hashpartitions).
+m2|46|B|Add more workers without changing how the JDBC source is read.
+m2|46|C|Convert the job to a Python shell job to avoid Spark overhead.
+m2|46|D|Disable the JDBC connection and export the table to CSV by hand.
+m2|48|A|A larger instance type for the primary node.
+m2|48|B|EMR managed scaling for the core and task node groups.
+m2|48|C|A cluster log URI that archives the logs to an S3 bucket.
+m2|48|D|A smaller HDFS block size for the Spark input data.
+m2|49|A|A security group attached to the S3 gateway endpoint.
+m2|49|B|A VPC endpoint policy that allows only the company's buckets.
+m2|49|C|An S3 lifecycle rule on the shared buckets.
+m2|49|D|A Route 53 private hosted zone that resolves only the company's buckets.
+m2|50|A|Call the model synchronously for every ticket from a Lambda function with unlimited concurrency.
+m2|50|B|Train a custom classification model on SageMaker every day.
+m2|50|C|Run an Amazon Bedrock batch inference job that reads prompts from S3 and writes results to S3.
+m2|50|D|Send every ticket to Amazon Rekognition for classification.
+m2|51|A|Amazon DynamoDB with a separate similarity-search service.
+m2|51|B|Amazon S3 Select over exported embeddings.
+m2|51|C|Amazon Athena over the embeddings stored in S3.
+m2|51|D|The pgvector extension with vector columns and an approximate nearest-neighbor index.
+m2|52|A|The DAG processing logs in CloudWatch Logs for import errors, and the file's path under dags/.
+m2|52|B|The VPC route tables for the S3 bucket that holds the DAG files.
+m2|52|C|The Glue Data Catalog entries that the DAG reads at parse time.
+m2|52|D|The Kinesis shard count of the stream that triggers the DAG.
+m2|58|A|AWS CodePipeline with CodeBuild unit tests, deploying infrastructure through CloudFormation or CDK.
+m2|58|B|Editing the Glue scripts directly in the console and saving the new version.
+m2|58|C|Emailing updated scripts to operations, who upload them to S3 after review.
+m2|58|D|A cron job on an EC2 instance that copies the scripts to S3 every night.
+m2|59|A|AWS CLI scripts that create each resource one by one.
+m2|59|B|Manual console configuration that is documented in a runbook.
+m2|59|C|AWS Batch jobs that deploy each resource on demand.
+m2|59|D|AWS Serverless Application Model (AWS SAM).
+m2|60|A|S3 Transfer Acceleration on the source bucket.
+m2|60|B|S3 Select queries that copy the critical objects.
+m2|60|C|S3 Cross-Region Replication (with versioning enabled).
+m2|60|D|A VPC peering connection between two Regions.
+m2|62|A|Reduce the number of workers to lower the per-file overhead.
+m2|62|B|Use file grouping (groupFiles and groupSize) or compact the inputs into larger files.
+m2|62|C|Disable the Data Catalog so that the job lists the files itself.
+m2|62|D|Increase the job timeout so that the listing can finish.
+m2|64|A|S3 Select on the job's output location.
+m2|64|B|A Glue crawler that scans the encrypted output.
+m2|64|C|A Data Catalog resource policy only.
+m2|64|D|A Glue security configuration that specifies KMS keys for S3, CloudWatch Logs and job bookmarks.
+m2|65|A|Educate developers about the risks of public buckets.
+m2|65|B|Use bucket tags to mark which buckets may be public.
+m2|65|C|Enable S3 Block Public Access at the account level.
+m2|65|D|Enable CloudWatch Logs for the S3 buckets.

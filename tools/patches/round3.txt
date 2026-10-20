@@ -1,0 +1,64 @@
+m1|19|B|A CloudWatch alarm on GetRecords.IteratorAgeMilliseconds that notifies SNS.
+m1|35|C|DynamoDB Time to Live (TTL) on an expiry attribute.
+m1|35|A|A scheduled Lambda function that scans the table and deletes the expired items.
+m1|35|B|DynamoDB Streams with a consumer that deletes items.
+m1|35|D|An S3 lifecycle rule that expires the session records.
+m1|40|A|Repartition to daily or hourly partitions and compact small files into larger Parquet files.
+m1|42|B|Queue requests in SQS and process them with Lambda at low maximum concurrency, with backoff on 429s.
+m1|47|C|An Evaluate Data Quality step with Completeness "order_id" > 0.95 that fails the job on failure.
+m1|51|A|Have the source deliver multiple smaller files, or convert to Parquet, so Spark can parallelize.
+m1|52|B|Split the data into multiple compressed files (a multiple of the slice count) and COPY from the prefix.
+m1|57|A|s3:GetObject on lake/raw/*, s3:PutObject on lake/curated/*, and s3:ListBucket scoped by prefix.
+m1|60|D|SELECT store, day, AVG(daily_sales) OVER (PARTITION BY store ORDER BY day ROWS 6 PRECEDING) FROM t
+m1|64|C|An EventBridge rule on Glue Job State Change events (FAILED, TIMEOUT) that publishes to SNS.
+m2|11|B|Increase the event source mapping's ParallelizationFactor (up to 10 batches per shard).
+m2|13|A|An Amazon ECS task on AWS Fargate, started through the Step Functions .sync integration.
+m2|21|C|Schedule table compaction (for example Athena OPTIMIZE ... BIN_PACK or S3 Tables maintenance).
+m2|23|B|An SQS FIFO queue that uses the account ID as MessageGroupId, with batching.
+m2|25|D|Store the schemas under separate prefixes (or exclusion patterns), one table per prefix.
+m2|27|C|Make the write idempotent: a conditional insert or upsert keyed by object key and ETag.
+m2|30|B|One workgroup per team with a per-query data limit and data usage alarms to SNS.
+m2|35|B|Amazon API Gateway with a Lambda function that runs or reads precomputed Athena results.
+m2|37|B|An AWS Config rule for S3 default encryption with automatic remediation.
+m2|40|A|Add the column to the table definition (ALTER TABLE ADD COLUMNS); older files return NULL.
+m2|46|A|Configure a partitioned JDBC read (a partition column with bounds, or hashfield/hashpartitions).
+m2|51|D|The pgvector extension with an approximate nearest-neighbor index.
+m2|52|A|The DAG processing logs in CloudWatch Logs, and the file's path under dags/.
+m2|58|A|AWS CodePipeline with CodeBuild unit tests, deploying through CloudFormation or CDK.
+m2|62|B|Use file grouping (groupFiles and groupSize) or compact the inputs into larger files.
+m2|64|D|A Glue security configuration that specifies KMS keys for S3, CloudWatch Logs and bookmarks.
+m2|64|A|S3 Select on the job's output location to read the encrypted files.
+m2|64|B|A Glue crawler that scans the encrypted output location.
+m2|64|C|A Data Catalog resource policy that restricts who can read the output.
+t|1|B|A NAT gateway with an Elastic IP in a public subnet; give the partner that IP.
+t|3|A|Land raw data in S3, apply schema-on-read through the Glue Data Catalog, and use DynamicFrames.
+t|5|A|Use table mappings with parallel load for large tables and raise the parallel table count.
+t|6|B|A Glue workflow with a scheduled start trigger and a conditional trigger on crawler success.
+t|8|D|Write to more prefixes (partition the output), reduce small files, and retry with backoff.
+t|10|A|Retry with IntervalSeconds, BackoffRate and MaxAttempts, then a Catch that routes to a fallback state.
+t|13|D|Factor logic into pure functions, run pytest on small samples in CI, and deploy through a pipeline.
+t|17|B|Send the table's changes to Kinesis Data Streams and deliver them to S3 with Data Firehose.
+t|27|D|Access rows in a consistent order, keep transactions short, and retry on deadlock errors.
+t|30|C|Set the crawler's schema change policy to log changes, then apply approved changes manually.
+t|31|A|COPY with FORMAT AS PARQUET into a table, then export it with a SELECT statement.
+t|31|B|INSERT INTO an S3 path with a SELECT statement.
+t|31|C|VACUUM the table with a PARQUET option after the export.
+t|31|D|UNLOAD with FORMAT PARQUET and PARTITION BY (sale_date).
+t|33|B|A lifecycle configuration with a 90-day expiration rule and an AbortIncompleteMultipartUpload rule.
+t|41|C|Use ResolveChoice (for example cast to string) and manage schema versions in a schema registry.
+t|46|A|Export the logs to S3 (an export task, or a subscription filter through Firehose) and query with Athena.
+t|47|B|Redshift audit logging to S3 or CloudWatch Logs, with enable_user_activity_logging.
+t|54|D|A view (an Athena view or a Redshift view) that filters to active customers.
+t|55|A|A CloudWatch Logs metric filter on the log group, with an alarm on the metric.
+t|59|A|Kinesis read actions (GetRecords, GetShardIterator, DescribeStream, ListShards) on that stream, and logs write actions.
+t|59|B|kinesis:* on all streams, plus logs:* on all log groups in the account.
+t|59|C|The AdministratorAccess managed policy, so the function can read from any service.
+t|59|D|Only s3:GetObject on the bucket that the function writes to, plus basic Lambda execution.
+t|60|C|RDS: AWS manages OS and infrastructure patching. EC2: the customer patches OS and database.
+t|61|D|Domain units for the business units and projects for each team's workspace.
+t|62|A|ABAC that compares aws:PrincipalTag/team with the resource tag team.
+t|63|C|Create a snapshot copy grant for a KMS key in the destination Region and enable cross-Region copy.
+t|65|D|An EventBridge rule on CloudTrail management events (DisableKey, ScheduleKeyDeletion) that publishes to SNS.
+t|67|C|A distributed framework such as Spark on EMR or AWS Glue, reading from S3.
+t|69|A|SCPs that deny Regions outside the approved EU Regions, replication to EU Regions only, and Region-scoped KMS keys.
+t|70|D|The owner approves the subscription and the catalog provisions the grant, for example through Lake Formation.
