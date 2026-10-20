@@ -1,0 +1,212 @@
+t|1|A|An S3 gateway endpoint added to the route table of the private subnet.
+t|1|B|A NAT gateway with an Elastic IP in a public subnet, routed from the private subnet; give the partner that IP.
+t|1|C|An interface VPC endpoint for AWS Glue so that the connection stays on the AWS network.
+t|1|D|A Route 53 private hosted zone that resolves the partner's database name to a fixed address.
+t|2|A|Stateless processing, because each payment event can be handled independently of the others.
+t|2|B|Batch processing once per day, comparing the full day's events for duplicates.
+t|2|C|Encryption in transit between the producers and the stream, which removes replayed events.
+t|2|D|Stateful processing that remembers recently seen event IDs, such as Apache Flink with keyed state.
+t|3|A|Land raw data in S3, apply schema-on-read through the Glue Data Catalog, and use DynamicFrames to transform it.
+t|3|B|Force every source into one relational schema before ingestion so that all data is uniform.
+t|3|C|Store every file and event as an item in a single DynamoDB table with a generic key.
+t|3|D|Reject any file that does not match a fixed schema and ask the producer to resend it.
+t|4|A|Write each failure to a DynamoDB table and have the on-call team query it.
+t|4|B|Poll the CloudWatch Logs group by hand and forward the error lines.
+t|4|C|Publish to an Amazon SNS topic that has both email and SMS subscriptions.
+t|4|D|Send a message to an SQS queue that the on-call team monitors.
+t|5|A|Use table mappings with parallel load for the large tables and raise the number of tables loaded in parallel.
+t|5|B|Switch the replication instance to a smaller class so that fewer tasks compete for resources.
+t|5|C|Disable CDC once the load is finished so that the full load can use the whole instance.
+t|5|D|Load the tables in alphabetical order so that the large ones start last.
+t|6|A|Two independent schedules set 30 minutes apart, assuming the crawler finishes first.
+t|6|B|A Glue workflow with a scheduled start trigger and a conditional trigger that starts the job on crawler success.
+t|6|C|A Lambda function that sleeps until the crawler has had time to complete.
+t|6|D|An S3 lifecycle rule that moves the crawled files to the job's input prefix.
+t|8|A|Increase the number of workers so that more tasks write to the prefix in parallel.
+t|8|B|Disable S3 encryption on the bucket to remove the KMS request overhead.
+t|8|C|Move the bucket to another Region that has higher request rate limits.
+t|8|D|Write to more prefixes (partition the output), reduce the number of small files, and retry with backoff.
+t|9|A|API Gateway with an EC2 fleet that reads profiles from an RDS database.
+t|9|B|API Gateway with a Lambda function that reads profiles from Amazon DynamoDB.
+t|9|C|An Athena query for every request, reading profiles from S3.
+t|9|D|A Redshift query for every request, reading profiles from a table.
+t|10|A|Retry with IntervalSeconds, BackoffRate and MaxAttempts, then a Catch that routes to the fallback state.
+t|10|B|A Parallel state that runs the task three times and keeps the first successful result.
+t|10|C|A Pass state that injects a default result when the task fails.
+t|10|D|A Wait state placed before the task so that the API has time to recover.
+t|11|A|An Express workflow with a long Wait state until the approval arrives.
+t|11|B|A Map state that iterates over the pending approvals once an hour.
+t|11|C|A Standard workflow task that uses the wait-for-callback pattern with a task token.
+t|11|D|A Choice state that loops back to itself until the manager approves.
+t|13|A|Test only in production, where the real data volumes and permissions are available.
+t|13|B|Skip tests and rely on monitoring to catch failures after deployment.
+t|13|C|Run the full 2 TB job after every edit to confirm that the logic is correct.
+t|13|D|Factor logic into pure functions, run pytest on small samples locally or in CI, and run it in a pipeline.
+t|14|A|One CloudFormation or CDK definition that is parameterized for each environment.
+t|14|B|Manual console creation of the job, role and bucket in each account.
+t|14|C|Separate hand-written scripts for each environment, copied and edited.
+t|14|D|A spreadsheet of console steps that operators follow for every deployment.
+t|15|A|Add more shuffle partitions only, without changing the join strategy.
+t|15|B|Broadcast the small lookup table to all executors.
+t|15|C|Convert both inputs to CSV so that Spark can split them more evenly.
+t|15|D|Run the job on a single node to avoid network shuffles.
+t|16|A|Duplicate the producers so that they write to two separate streams.
+t|16|B|Export the stream to S3 in a nightly batch and run Flink on the exports.
+t|16|C|Have the Flink application write its input to both S3 and Firehose.
+t|16|D|Attach a Firehose delivery stream for S3 archival and run Flink as another consumer.
+t|17|A|A Lambda function that scans the table every minute and writes the changes to S3.
+t|17|B|Send the table's changes to Kinesis Data Streams and deliver them to S3 with Amazon Data Firehose.
+t|17|C|Export the whole table to S3 every hour and diff the exports.
+t|17|D|Query the table's changes directly with Athena.
+t|19|A|Enable Glue auto scaling with a maximum worker count so workers are added only when needed.
+t|19|B|Increase the fixed worker count to 100 so that every stage has spare capacity.
+t|19|C|Move the job to a Python shell job to avoid paying for Spark executors.
+t|19|D|Disable job bookmarks so that the job needs fewer workers per run.
+t|22|A|Increase the ETL job's workers so that the read finishes in less time.
+t|22|B|Read from a read replica, or export a snapshot to S3 and process the export.
+t|22|C|Run the job during business hours when the database caches are warm.
+t|22|D|Disable the database's automated backups during the ETL window.
+t|24|A|Increase the memory to the maximum so that the archive fits in memory.
+t|24|B|Reduce the timeout so that the function fails quickly if the archive is too large.
+t|24|C|Increase the function's ephemeral storage (/tmp), which can be set up to 10,240 MB.
+t|24|D|Place the archive in an environment variable that the function reads at start.
+t|26|A|A bigger writer instance, with the reports routed to it as well.
+t|26|B|Convert the database to DynamoDB so that reads scale automatically.
+t|26|C|Aurora Replicas and the reader endpoint for the reporting connections.
+t|26|D|Disable replication so that the writer has more capacity for reports.
+t|27|A|Disable transactions so that rows are never locked while the statements run.
+t|27|B|Increase the storage size so that lock tables have more room.
+t|27|C|Move to a smaller instance class so that fewer sessions run concurrently.
+t|27|D|Access rows in a consistent order, keep transactions short, and retry on a deadlock error.
+t|28|A|A materialized view over the external table, refreshed on a schedule.
+t|28|B|DISTSTYLE ALL on the external table so that every node holds a copy.
+t|28|C|VACUUM on the external table to reclaim space and re-sort the data.
+t|28|D|A bigger Athena workgroup to speed up the Spectrum scans.
+t|29|A|A separate Hive metastore for each cluster, synchronized with scripts.
+t|29|B|Configure EMR to use the AWS Glue Data Catalog as its Hive metastore.
+t|29|C|Copy the schemas manually into each Spark job at deployment time.
+t|29|D|Store the schemas in a text file in S3 that each job parses.
+t|30|A|Run the crawler hourly so that schema changes are picked up faster.
+t|30|B|Delete and recreate the table each night from the crawler results.
+t|30|C|Set the crawler's schema change policy to log changes, then apply approved changes manually.
+t|30|D|Disable the Glue Data Catalog and define the schemas in each query.
+t|32|A|Run a row-level DELETE for the customer, then expire old snapshots and remove orphaned files.
+t|32|B|Delete only the table's current metadata file so that the rows can no longer be found.
+t|32|C|Wait for the S3 lifecycle rule to remove the objects at the end of the retention period.
+t|32|D|Disable queries for the customer's identifier in the BI tool.
+t|33|A|A bucket policy that denies uploads to the logs prefix after 90 days.
+t|33|B|A lifecycle configuration with a 90-day expiration rule and an AbortIncompleteMultipartUpload rule.
+t|33|C|S3 Transfer Acceleration on the bucket to finish uploads sooner.
+t|33|D|S3 Inventory reports that list the old objects for manual deletion.
+t|34|A|A scan with a filter expression on orderStatus, run on a schedule.
+t|34|B|A local secondary index on orderStatus, added to the existing table.
+t|34|C|A global secondary index with partition key orderStatus and sort key orderDate.
+t|34|D|A second table copy that is updated by hand whenever the status changes.
+t|38|A|Primary key constraints, which are enforced to prevent bad rows.
+t|38|B|Snapshots, which enable time travel and rollback to an earlier snapshot.
+t|38|C|B-tree indexes on each column, which are rebuilt after every write.
+t|38|D|Foreign keys, which reject writes that reference missing rows.
+t|39|A|Create partition indexes in the Glue Data Catalog (or use partition projection).
+t|39|B|Increase the Athena query timeout so that planning has more time to finish.
+t|39|C|Add an S3 lifecycle rule that moves old partitions to a cheaper class.
+t|39|D|Decrease the file size so that each partition holds fewer rows.
+t|41|A|Ignore the failures and rerun the job when the upstream team fixes the column.
+t|41|B|Delete the column from the target so that the type conflict disappears.
+t|41|C|Use ResolveChoice (for example cast to string) and manage schema versions with the Schema Registry.
+t|41|D|Disable the job until the upstream system returns to the previous type.
+t|43|A|Use the SDK paginator, or loop on the continuation token.
+t|43|B|Call list_objects_v2 once and read the full result set.
+t|43|C|Increase MaxKeys above 1,000 so that one call returns every key.
+t|43|D|Use a larger instance so that the single call returns more results.
+t|46|A|Export the logs to S3 (an export task, or a subscription filter through Firehose) and query them with Athena.
+t|46|B|Take screenshots of the CloudWatch console each month and file them.
+t|46|C|Delete older log events so that only recent entries need review.
+t|46|D|Stop logging after the audit period to reduce the volume.
+t|47|A|Concurrency scaling, which records each query that the extra clusters run.
+t|47|B|Redshift audit logging to S3 or CloudWatch Logs, with enable_user_activity_logging for query text.
+t|47|C|Elastic resize, which keeps a history of all connections and queries.
+t|47|D|Redshift Spectrum, which logs the queries that read external tables.
+t|48|A|Sleep in a Python task for 24 hours and then check for the file.
+t|48|B|Use an S3 key sensor, preferably in deferrable mode, as the first task.
+t|48|C|Run the DAG every second so that the file is detected quickly.
+t|48|D|Poll with a Lambda function that is invoked from inside the DAG body.
+t|49|A|A fixed cluster size that is provisioned for the daily peak.
+t|49|B|Termination protection, which keeps nodes running until jobs finish.
+t|49|C|A larger primary node that can schedule more work during peaks.
+t|49|D|EMR managed scaling, or auto scaling policies on the instance groups.
+t|50|A|Configure API Gateway throttling and usage plans with API keys.
+t|50|B|Remove authentication so that the clients' requests are not retried.
+t|50|C|Increase the Lambda timeout so that slow requests complete.
+t|50|D|Disable logging to reduce the overhead of each request.
+t|51|A|A daily manual review of the landing bucket by the data team.
+t|51|B|An EC2 instance that polls the bucket and moves invalid files.
+t|51|C|An S3 event notification that triggers a Lambda function to validate and move the file.
+t|51|D|A scheduled Redshift query that lists the files and flags invalid ones.
+t|53|A|SELECT order_id FROM orders ORDER BY order_id ASC LIMIT 100;
+t|53|B|SELECT order_id, COUNT(*) FROM orders GROUP BY order_id HAVING COUNT(*) > 1;
+t|53|C|SELECT DISTINCT order_id, COUNT(order_id) FROM orders;
+t|53|D|SELECT order_id FROM orders WHERE order_id IS NOT NULL;
+t|54|A|A second copy of the table in S3 that is refreshed every night.
+t|54|B|A DynamoDB table that stores only the active customers.
+t|54|C|A Glue crawler that creates a table from the active customers' files.
+t|54|D|A view (an Athena view in the Data Catalog, or a Redshift view) that filters to active customers.
+t|55|A|A CloudWatch Logs metric filter on the log group, with an alarm on the resulting metric.
+t|55|B|A CloudTrail trail that records each Lambda invocation and its result.
+t|55|C|An S3 lifecycle rule on the log bucket that counts the error lines.
+t|55|D|A scheduled Redshift query over the logs that publishes the count.
+t|56|A|Rewrite the job in Scala so that the library is available in the runtime.
+t|56|B|Increase the worker type so that the library can be installed on larger nodes.
+t|56|C|Supply the library with --additional-python-modules (or an S3 wheel through --extra-py-files).
+t|56|D|Disable job bookmarks so that the job reinstalls its dependencies on each run.
+t|57|A|A manual spreadsheet review of each new file by the data team.
+t|57|B|S3 Select queries that filter the invalid emails when the file is read.
+t|57|C|CloudTrail logs that show which files contained invalid emails.
+t|57|D|A Glue DataBrew data quality ruleset (or Glue Data Quality) applied to the dataset.
+t|58|A|Trust the s3.amazonaws.com service principal, because the job reads from S3.
+t|58|B|Trust the glue.amazonaws.com service principal so that Glue can assume the role.
+t|58|C|Trust the root user of another account that owns the job's script.
+t|58|D|Trust the ec2.amazonaws.com service principal, because Glue runs on EC2.
+t|59|A|Kinesis read actions (GetRecords, GetShardIterator, DescribeStream, ListShards) on the stream, plus CloudWatch Logs write actions.
+t|59|B|kinesis:* on all streams, plus logs:* on all log groups.
+t|59|C|The AdministratorAccess managed policy.
+t|59|D|Only s3:GetObject on the bucket that the function writes to.
+t|60|A|AWS patches the operating system of a database that runs on EC2.
+t|60|B|The customer patches the underlying operating system of an RDS instance.
+t|60|C|For RDS, AWS manages OS and infrastructure patching, while on EC2 the customer patches OS and database.
+t|60|D|Neither option requires patching because both are covered by AWS.
+t|61|A|S3 buckets with one prefix for each business unit and team.
+t|61|B|Glue crawlers with one crawler for each team.
+t|61|C|CloudFront distributions with one distribution for each business unit.
+t|61|D|Domain units for the business units and projects for each team's workspace within the domain.
+t|62|A|Attribute-based access control that compares aws:PrincipalTag/team with the resource tag team.
+t|62|B|One IAM policy for each team, listing the team's prefixes.
+t|62|C|Administrator access for everyone, with a naming convention for projects.
+t|62|D|A shared access key for each team that is stored in Parameter Store.
+t|63|A|Disable encryption on the cluster before enabling snapshot copy.
+t|63|B|Share the snapshot publicly so that the other Region can restore it.
+t|63|C|Create a snapshot copy grant for a KMS key in the destination Region and enable cross-Region snapshot copy.
+t|63|D|Use S3 Select to export the snapshot contents to the other Region.
+t|64|A|Rely on S3 default encryption only, which encrypts objects after S3 receives them.
+t|64|B|Client-side encryption of the data before upload, for example with the AWS Encryption SDK.
+t|64|C|Use plain HTTP so that the data is not decrypted by an intermediate proxy.
+t|64|D|Make the bucket public so that no service needs credentials to read the data.
+t|65|A|A weekly manual review of the KMS console by the security team.
+t|65|B|S3 Inventory reports that list the keys that are currently disabled.
+t|65|C|An S3 lifecycle rule that deletes objects encrypted with disabled keys.
+t|65|D|An EventBridge rule on CloudTrail management events (DisableKey, ScheduleKeyDeletion) that notifies SNS.
+t|66|A|A Redshift cluster that loads the logs every night with COPY.
+t|66|B|An Athena table over the CloudTrail bucket, using partition projection.
+t|66|C|A DynamoDB table that stores each log event as an item.
+t|66|D|An EMR cluster that runs continuously and parses the logs.
+t|67|A|A single Lambda function that parses each log file in turn.
+t|67|B|Manual scripts that are run on an engineer's laptop.
+t|67|C|A distributed framework such as Spark on Amazon EMR or AWS Glue, reading from S3.
+t|67|D|Amazon SNS topics that fan the log lines out to many subscribers.
+t|69|A|SCPs that deny Regions outside the approved EU Regions, replication only to another EU Region, and Region-scoped keys.
+t|69|B|Cross-Region replication to whichever Region has the lowest storage cost.
+t|69|C|Replicating to a US Region for durability, with strong encryption.
+t|69|D|Making the buckets public so that the EU regulator can audit them.
+t|70|A|The consumer emails the producer, who creates and sends an access key.
+t|70|B|The asset is copied to a public bucket where the consumer can read it.
+t|70|C|The consumer is given a shared administrator password for the producer's account.
+t|70|D|The owner approves the subscription and the catalog provisions the grant (for example through Lake Formation).

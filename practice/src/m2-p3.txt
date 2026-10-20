@@ -1,0 +1,253 @@
+@@Q 45 | MC | D1 | 1.1.4 | M | D
+A nightly job calls a paginated third-party REST API, takes about 40 minutes, and writes JSON to S3. The team wants the simplest serverless scheduled solution.
+Which option is BEST?
+A. A single Lambda function that is allowed to run for 40 minutes.
+B. An EC2 instance that runs a cron job calling the API.
+C. An EMR cluster that is started for the nightly run.
+D. An AWS Glue Python shell job started by a schedule.
+@@E
+- Correct D: A Python shell job has no 15-minute limit and suits light API-to-S3 work serverlessly.
+- A: Lambda times out at 15 minutes.
+- B: Servers to manage.
+- C: Overkill.
+@@Q 46 | MC | D1 | 1.2.2 | H | A
+A Spark job in AWS Glue reads a very large table from Amazon RDS for PostgreSQL over JDBC and is slow because a single connection reads all rows.
+How can read performance be improved?
+A. Configure a partitioned JDBC read (a partition column with bounds, or hashfield/hashpartitions).
+B. Add more workers without changing how the JDBC source is read.
+C. Convert the job to a Python shell job to avoid Spark overhead.
+D. Disable the JDBC connection and export the table to CSV by hand.
+@@E
+- Correct A: Partitioned reads open multiple parallel connections.
+- B: Idle workers if the read is serial.
+- C: Less parallelism.
+- D: Would stop the read.
+@@Q 47 | MC | D2 | 2.4.6 | M | B
+A team wants to build a retrieval-augmented generation (RAG) application where documents in S3 are chunked, embedded, stored in a vector store, and retrieved for prompts, with minimal custom code.
+Which service is BEST?
+A. Amazon Redshift.
+B. Amazon Bedrock Knowledge Bases.
+C. AWS Glue DataBrew.
+D. Amazon Kinesis Data Firehose.
+@@E
+- Correct B: Knowledge Bases manages ingestion, chunking, embedding, storage, and retrieval.
+- A: A data warehouse, not a managed RAG pipeline.
+- C: Visual data prep.
+- D: Streaming delivery.
+@@Q 48 | MC | D3 | 3.3.6 | M | C
+An EMR Spark step failed, and the cluster was terminated before engineers could inspect the YARN and Spark logs.
+What should be configured to prevent this problem?
+A. A larger instance type for the primary node.
+B. EMR managed scaling for the core and task node groups.
+C. A cluster log URI that archives the logs to an S3 bucket.
+D. A smaller HDFS block size for the Spark input data.
+@@E
+- Correct C: Log archiving to S3 preserves logs after termination.
+- A: Does not preserve logs.
+- B: Scales nodes.
+- D: Unrelated.
+@@Q 49 | MC | D4 | 4.1.5 | H | B
+Jobs in a VPC use an S3 gateway endpoint. Security wants to ensure traffic through the endpoint can reach only the company's data lake buckets.
+What should be configured?
+A. A security group attached to the S3 gateway endpoint.
+B. A VPC endpoint policy that allows only the company's buckets.
+C. An S3 lifecycle rule on the shared buckets.
+D. A Route 53 private hosted zone that resolves only the company's buckets.
+@@E
+- Correct B: Endpoint policies restrict which resources can be accessed through the endpoint.
+- A: Gateway endpoints do not use security groups.
+- C: Unrelated.
+- D: DNS does not control authorization.
+@@Q 50 | MC | D1 | 1.2.10 | H | C
+A company must classify 10 million support tickets nightly with a foundation model and store the results in S3. Results are not needed in real time, and cost efficiency matters.
+Which approach is BEST?
+A. Call the model synchronously for every ticket from a Lambda function with unlimited concurrency.
+B. Train a custom classification model on SageMaker every day.
+C. Run an Amazon Bedrock batch inference job that reads prompts from S3 and writes results to S3.
+D. Send every ticket to Amazon Rekognition for classification.
+@@E
+- Correct C: Batch inference processes large volumes asynchronously at lower cost than on-demand calls.
+- A: Risks throttling and higher per-request cost.
+- B: Training is out of scope and unnecessary.
+- D: An image analysis service.
+@@Q 51 | MC | D2 | 2.1.3 | M | D
+An existing application on Amazon Aurora PostgreSQL needs semantic search over product descriptions and must join results with relational tables in the same database, without adding a new service.
+What should the data engineer use?
+A. Amazon DynamoDB with a separate similarity-search service.
+B. Amazon S3 Select over exported embeddings.
+C. Amazon Athena over the embeddings stored in S3.
+D. The pgvector extension with an approximate nearest-neighbor index.
+@@E
+- Correct D: pgvector adds vector similarity search to PostgreSQL alongside relational joins.
+- A: A separate store without SQL joins.
+- B: Filters within an object.
+- C: Not part of the application database.
+@@Q 52 | MC | D3 | 3.1.2 | M | A
+A new Airflow DAG file uploaded to the MWAA environment's S3 dags folder does not appear in the Airflow UI.
+What should the engineer check first?
+A. The DAG processing logs in CloudWatch Logs, and the file's path under dags/.
+B. The VPC route tables for the S3 bucket that holds the DAG files.
+C. The Glue Data Catalog entries that the DAG reads at parse time.
+D. The Kinesis shard count of the stream that triggers the DAG.
+@@E
+- Correct A: DAG parse errors are reported in the DAG processing logs, and path misconfiguration prevents discovery.
+- B: Unlikely first check.
+- C: Unrelated.
+- D: Unrelated.
+@@Q 53 | MC | D1 | 1.1.2 | M | B
+Business partners need to upload files to S3 using SFTP with their existing SFTP clients, and the company does not want to run servers.
+Which service should be used?
+A. AWS DataSync.
+B. AWS Transfer Family.
+C. AWS Snowball Edge.
+D. Amazon AppFlow.
+@@E
+- Correct B: Transfer Family provides managed SFTP, FTPS, and FTP endpoints backed by S3.
+- A: Agent-based transfer between storage systems.
+- C: Offline appliance.
+- D: SaaS integration.
+@@Q 54 | MR | D2 | 2.3.6 | M | C,E
+Which TWO actions protect S3 objects from accidental deletion or overwrite? (Select TWO.)
+A. Enable Transfer Acceleration.
+B. Enable Requester Pays.
+C. Enable bucket versioning.
+D. Enable server access logging only.
+E. Enable MFA delete or S3 Object Lock.
+@@E
+- Correct C and E: Versioning preserves prior versions; MFA delete or Object Lock restricts deletion.
+- A: Performance.
+- B: Billing.
+- D: Logging does not prevent deletion.
+@@Q 55 | MC | D3 | 3.2.4 | M | D
+A data scientist wants to explore S3 data interactively with PySpark without provisioning or managing clusters.
+Which option is BEST?
+A. A self-managed Jupyter server on EC2.
+B. A long-running EMR cluster.
+C. Amazon Redshift query editor.
+D. Amazon Athena notebooks that use Apache Spark.
+@@E
+- Correct D: Athena for Apache Spark provides serverless interactive notebooks.
+- A: Servers to manage.
+- B: Cluster management.
+- C: SQL editor, not PySpark.
+@@Q 56 | MC | D4 | 4.2.4 | H | A
+A data lake is currently governed only by IAM and S3 policies, and many jobs depend on that. The company wants to adopt Lake Formation permissions gradually without breaking existing jobs.
+Which feature supports this?
+A. Lake Formation hybrid access mode.
+B. Deleting all IAM policies immediately.
+C. Making buckets public.
+D. Disabling Glue.
+@@E
+- Correct A: Hybrid access mode lets selected principals and tables use Lake Formation while others continue with IAM-based access.
+- B: Would break jobs.
+- C: Insecure.
+- D: Unrelated.
+@@Q 57 | MC | D1 | 1.2.5 | M | C
+A team runs occasional open-source Spark jobs with custom libraries and wants no cluster management and pay-per-use pricing.
+Which service is BEST?
+A. EMR on EC2 with a persistent cluster.
+B. Amazon Athena.
+C. Amazon EMR Serverless.
+D. AWS Batch with EC2.
+@@E
+- Correct C: EMR Serverless runs Spark without managing clusters and scales per job.
+- A: Cluster management and idle cost.
+- B: SQL service; custom libraries are limited.
+- D: Not a Spark service.
+@@Q 58 | MC | D1 | 1.4.9 | M | A
+A team wants every change to a Glue ETL script and its infrastructure to be tested and deployed automatically.
+Which approach is BEST?
+A. AWS CodePipeline with CodeBuild unit tests, deploying through CloudFormation or CDK.
+B. Editing the Glue scripts directly in the console and saving the new version.
+C. Emailing updated scripts to operations, who upload them to S3 after review.
+D. A cron job on an EC2 instance that copies the scripts to S3 every night.
+@@E
+- Correct A: A pipeline with tests and IaC provides repeatable CI/CD.
+- B: Manual and unversioned.
+- C: Manual.
+- D: No testing or rollbacks.
+@@Q 59 | MC | D1 | 1.4.6 | M | D
+A developer wants to define a Lambda function, a Step Functions state machine, and a DynamoDB table in one template, test locally, and deploy.
+Which tool is MOST appropriate?
+A. AWS CLI scripts that create each resource one by one.
+B. Manual console configuration that is documented in a runbook.
+C. AWS Batch jobs that deploy each resource on demand.
+D. AWS Serverless Application Model (AWS SAM).
+@@E
+- Correct D: SAM simplifies serverless resource definitions and offers local build, invoke, and deploy.
+- A: No higher-level model.
+- B: Not repeatable.
+- C: Unrelated.
+@@Q 60 | MC | D2 | 2.3.6 | M | C
+A company must keep a copy of critical S3 data in another Region for disaster recovery with minimal effort.
+What should be enabled?
+A. S3 Transfer Acceleration on the source bucket.
+B. S3 Select queries that copy the critical objects.
+C. S3 Cross-Region Replication (with versioning enabled).
+D. A VPC peering connection between two Regions.
+@@E
+- Correct C: CRR replicates objects asynchronously to a bucket in another Region and requires versioning.
+- A: Faster uploads, not replication.
+- B: Query feature.
+- D: Network connectivity.
+@@Q 61 | MR | D2 | 2.1.2 | M | A,C
+Which TWO statements about Amazon S3 Express One Zone are correct? (Select TWO.)
+A. It uses directory buckets.
+B. It stores data redundantly across at least three Availability Zones.
+C. It is designed for single-digit millisecond request latency in a single Availability Zone.
+D. It is intended for archival data.
+E. It requires restores before reads.
+@@E
+- Correct A and C: Express One Zone uses directory buckets in one AZ for very low latency.
+- B: Data is stored in one AZ.
+- D: It targets hot, latency-sensitive data.
+- E: No restore step.
+@@Q 62 | MC | D3 | 3.3.4 | M | B
+A Glue Spark job reading thousands of tiny JSON files from S3 spends most of its time listing and opening files.
+What is the BEST tuning step?
+A. Reduce the number of workers to lower the per-file overhead.
+B. Use file grouping (groupFiles and groupSize) or compact the inputs into larger files.
+C. Disable the Data Catalog so that the job lists the files itself.
+D. Increase the job timeout so that the listing can finish.
+@@E
+- Correct B: Grouping reduces per-file overhead and task counts.
+- A: Reduces resources.
+- C: Does not address small files.
+- D: Masks the issue.
+@@Q 63 | MR | D3 | 3.4.4 | M | A,C
+A data engineer must profile a 5 TB dataset cheaply while keeping the sample representative of each customer segment.
+Which TWO sampling approaches are appropriate? (Select TWO.)
+A. Stratified sampling by customer segment.
+B. Reading only the first 1,000 rows.
+C. Random sampling with a fixed seed.
+D. Choosing only the largest customers.
+E. Skipping profiling entirely.
+@@E
+- Correct A and C: Stratified and random sampling keep samples representative and reproducible.
+- B: Biased by file order.
+- D: Biased.
+- E: Skips the requirement.
+@@Q 64 | MC | D4 | 4.3.2 | M | D
+A Glue ETL job writes to S3 and CloudWatch Logs and uses bookmarks. Policy requires all three to be encrypted with a customer managed KMS key.
+What should be used?
+A. S3 Select on the job's output location to read the encrypted files.
+B. A Glue crawler that scans the encrypted output location.
+C. A Data Catalog resource policy that restricts who can read the output.
+D. A Glue security configuration that specifies KMS keys for S3, CloudWatch Logs and bookmarks.
+@@E
+- Correct D: Security configurations apply encryption settings to job outputs, logs, and bookmarks.
+- A: Query feature.
+- B: Discovers schema.
+- C: Controls access, not encryption of job artifacts.
+@@Q 65 | MC | D4 | 4.5.3 | M | C
+The security team wants to prevent anyone in the account from making S3 buckets or objects public.
+Which control is MOST effective?
+A. Educate developers about the risks of public buckets.
+B. Use bucket tags to mark which buckets may be public.
+C. Enable S3 Block Public Access at the account level.
+D. Enable CloudWatch Logs for the S3 buckets.
+@@E
+- Correct C: Account-level Block Public Access overrides bucket and object ACLs and policies that would grant public access.
+- A: Not enforceable.
+- B: Tags do not restrict access.
+- D: Logging is detective at best.

@@ -1,0 +1,181 @@
+m1|3|A|Enable BisectBatchOnFunctionError, limit retry attempts, and add an on-failure destination (SQS).
+m1|3|B|Double the number of shards so the failing batch is spread across more parallel readers.
+m1|3|C|Increase the function timeout to 15 minutes so the batch has enough time to process the bad record.
+m1|3|D|Register the function as an enhanced fan-out consumer so it receives records over a dedicated pipe.
+m1|5|A|Double the number of G.1X workers so the hot key's rows are processed on more executors.
+m1|5|B|Enable job bookmarks so the job only reads data it has not processed in earlier runs.
+m1|5|C|Add a random salt to the skewed key and join or aggregate in two stages.
+m1|5|D|Switch the job to the Flex execution class to run on spare capacity at a lower price.
+m1|6|A|Amazon MWAA with an Airflow DAG that uses Glue, Athena and Lambda operators.
+m1|6|B|AWS Glue workflows with a scheduled start trigger, conditional triggers and a notification step.
+m1|6|C|Chained Amazon EventBridge rules that fire on each service's completion event.
+m1|6|D|AWS Step Functions with .sync integrations for Glue and Athena, plus Retry and Catch.
+m1|7|B|Set DISTSTYLE ALL on the customers table so every node holds a full copy for local joins.
+m1|7|C|Set DISTSTYLE EVEN on both tables so rows are spread evenly across all slices.
+m1|7|D|Set DISTSTYLE ALL on the orders table so each node can join its own copy locally.
+m1|8|A|An AWS Lambda function with 10 GB of memory, invoked daily by an EventBridge schedule.
+m1|8|B|A long-running Amazon EMR cluster on EC2 with Spark and a JDBC driver installed.
+m1|8|D|An Amazon Athena CTAS query that joins the S3 data with the RDS table through federation.
+m1|9|A|Increase the DML query timeout so large scans have time to finish.
+m1|9|B|Use CTAS to rewrite the data as Snappy-compressed Parquet partitioned by event_date.
+m1|9|C|Spread the JSON files across more S3 prefixes to parallelize the scans.
+m1|9|D|Enable query result reuse so that repeated queries do not rescan the data.
+m1|10|A|An S3 bucket policy that denies analysts access to the objects that contain the ssn values.
+m1|10|B|An IAM policy for analysts that denies glue:GetTable on the customers table.
+m1|10|C|A second copy of the table without ssn in another bucket, refreshed by a nightly job.
+m1|10|D|Register the S3 location with Lake Formation and grant analysts SELECT on all columns except ssn.
+m1|12|A|Partition key orderId with a local secondary index whose partition key is customerId.
+m1|12|B|Partition key customerId, sort key orderDate, plus a global secondary index on orderId.
+m1|12|C|Partition key customerId, sort key orderDate; look up orders by orderId with a filtered Scan.
+m1|12|D|Partition key orderDate and sort key customerId, queried with begins_with conditions.
+m1|13|A|Kinesis Data Streams with a Lambda function that converts the records and writes Parquet to S3.
+m1|13|B|An EMR cluster running Spark Structured Streaming that writes Parquet files to S3.
+m1|13|C|A Glue crawler scheduled every minute that converts new JSON files to Parquet.
+m1|13|D|Amazon Data Firehose with record format conversion to Parquet using a Glue table schema.
+m1|14|A|Enable concurrency scaling together with automatic workload management.
+m1|14|B|Double the number of nodes permanently so the cluster can absorb the hourly peak.
+m1|14|C|Convert all tables to DISTSTYLE ALL so queries do not need to redistribute rows.
+m1|14|D|Move the dashboard data to Amazon RDS, which handles many concurrent short queries.
+m1|15|A|Increase the table's read capacity units to leave more headroom for the ETL job.
+m1|15|B|Add DynamoDB Accelerator (DAX) in front of the table to absorb the bursts.
+m1|15|C|Switch the table to on-demand capacity mode and keep retries with exponential backoff.
+m1|15|D|Add a local secondary index so the ETL job can write using a different sort key.
+m1|17|A|Store the password in a Glue job parameter and update the parameter by hand every 30 days.
+m1|17|B|Store the credentials in AWS Secrets Manager with automatic rotation and reference them from the Glue connection.
+m1|17|C|Store the password in an S3 object encrypted with SSE-S3 and have the job read it at start.
+m1|17|D|Embed the password in the script and rotate it by redeploying the job every 30 days.
+m1|18|A|A Glue trigger that starts the crawler every hour and the job after the crawler succeeds.
+m1|18|B|A Lambda function on a one-minute schedule that lists the bucket and starts the crawler.
+m1|18|C|A Glue crawler scheduled to run continuously, followed by a job that starts on a timer.
+m1|18|D|An S3 event to Amazon EventBridge that starts a Step Functions workflow to run the crawler and job.
+m1|21|A|Increase the function's memory so each invocation finishes faster and holds connections for less time.
+m1|21|B|Set a maximum concurrency on the SQS event source mapping and use RDS Proxy for pooling.
+m1|21|C|Convert the queue to a FIFO queue to preserve message ordering.
+m1|21|D|Increase the queue's visibility timeout so messages are not delivered to Lambda again too early.
+m1|22|A|An S3 gateway VPC endpoint associated with the subnet's route table.
+m1|22|B|A NAT gateway in a public subnet with a route from the private subnet to it.
+m1|22|C|An internet gateway attached to the VPC with a default route from the private subnet.
+m1|22|D|An interface VPC endpoint for AWS Glue, which provides access to the Glue APIs only.
+m1|23|A|Increase the number of workers so the full reload finishes faster and costs less overall.
+m1|23|B|Run a crawler before each job run so the job knows which files are new.
+m1|23|C|Enable job bookmarks, set transformation_ctx on sources and sinks, and call job.commit().
+m1|23|D|Query the data with S3 Select so that only the matching objects are read.
+m1|24|A|Configure partition projection on the Athena table for the dt column.
+m1|24|B|Run the Glue crawler every minute so new partitions are registered almost immediately.
+m1|24|C|Run MSCK REPAIR TABLE from a Lambda function on an hourly schedule.
+m1|24|D|Convert the table to an unpartitioned table so no partition registration is needed.
+m1|25|A|Convert the state machine to an Express workflow, which has no execution history limit.
+m1|25|B|Request an increase of the execution history limit through Service Quotas.
+m1|25|C|Increase the Lambda timeout for each item so the iterations finish within fewer events.
+m1|25|D|Use a Distributed Map state so each batch of items runs as a child workflow execution.
+m1|27|A|Amazon Data Firehose delivering directly into the private Redshift cluster.
+m1|27|B|A Redshift streaming ingestion materialized view that reads from the Kinesis stream.
+m1|27|C|A Lambda function that reads the stream and issues single-row INSERT statements.
+m1|27|D|AWS DMS with the Kinesis stream configured as a source endpoint.
+m1|29|A|Mount an Amazon EFS file system to the function.
+m1|29|B|Package the dataset in the function's deployment ZIP file and redeploy on every update.
+m1|29|C|Put the dataset in a Lambda layer that is shared by all versions of the function.
+m1|29|D|Store the dataset in an environment variable that the function reads at start.
+m1|30|A|Use a larger Athena workgroup so the dashboard queries get more compute.
+m1|30|B|Increase the Athena query timeout so the dashboard queries do not fail.
+m1|30|C|Import the dataset into SPICE and schedule a daily refresh.
+m1|30|D|Add more prefixes to the S3 bucket so the dashboard queries read in parallel.
+m1|31|A|AWS DataSync to copy the database files to the target Aurora cluster.
+m1|31|B|DMS Schema Conversion for the schema, then AWS DMS full load plus CDC.
+m1|31|C|An AWS Snowball Edge export and import of the database files.
+m1|31|D|A Glue crawler that catalogs and copies the tables to Aurora.
+m1|32|A|Create a datashare on the producer, authorize the consumer account, and associate it on the consumer.
+m1|32|B|UNLOAD the data to S3 every day and share the bucket with the consumer account.
+m1|32|C|Create a cross-account IAM user in the producer cluster and share its credentials.
+m1|32|D|Take a snapshot of the cluster and restore it into the consumer account.
+m1|33|A|One SQS queue that is read by all three downstream systems.
+m1|33|B|A single Lambda function that calls the three systems in sequence with try/catch.
+m1|33|C|Three Kinesis streams that the producer writes to, one per downstream system.
+m1|33|D|An SNS topic with three SQS queue subscriptions, each with its own dead-letter queue.
+m1|34|A|Enable S3 server access logs only, and read them with Athena when needed.
+m1|34|B|Configure the trail to record S3 data events (write) for the bucket.
+m1|34|C|Enable CloudTrail Insights on the trail to detect unusual S3 activity.
+m1|34|D|Enable AWS Config recording for S3 so deletions are tracked as configuration changes.
+m1|37|A|AWS Secrets Manager for every value, with rotation disabled.
+m1|37|B|Amazon S3 objects encrypted with SSE-S3, read by the application at startup.
+m1|37|C|A DynamoDB table with client-side encryption of each attribute.
+m1|37|D|AWS Systems Manager Parameter Store, using standard parameters and SecureString for secrets.
+m1|39|A|Rely on Firehose to retain the records for 7 days so they can be reloaded.
+m1|39|B|Delete the source files after loading to reduce storage cost.
+m1|39|C|Keep raw immutable data in S3 and make downstream loads idempotent (stage, then MERGE).
+m1|39|D|Retain only the transformed data in Redshift to keep the design simple.
+m1|40|A|Repartition to a coarser granularity (daily or hourly) and compact small files into larger Parquet files.
+m1|40|B|Add more partition columns, such as second, to prune the data further.
+m1|40|C|Convert the data to CSV so Athena can read it without a schema lookup.
+m1|40|D|Create more Athena workgroups so the queries are planned in parallel.
+m1|41|A|Increase the WLM queue count so the ALTER TABLE statement gets a slot.
+m1|41|B|Run VACUUM on the table to release any locks held on it.
+m1|41|C|Resize the cluster so the blocked statement runs on more nodes.
+m1|41|D|Query STV_LOCKS and SVV_TRANSACTIONS to find the blocker, then end it with PG_TERMINATE_BACKEND.
+m1|42|A|Invoke the API from many parallel Lambda functions as fast as possible.
+m1|42|B|Queue requests in SQS and process them with Lambda at low maximum concurrency, backing off on 429s.
+m1|42|C|Run the calls from a large EC2 instance and ignore the 429 responses.
+m1|42|D|Run an EMR cluster that makes the calls in parallel from every node.
+m1|43|A|Enable S3 Cross-Region Replication to a second Region for resilience.
+m1|43|B|Apply IAM permission boundaries to every developer role in the accounts.
+m1|43|C|An AWS Organizations SCP that denies actions when aws:RequestedRegion is not eu-central-1.
+m1|43|D|Use AWS Config rules to detect resources created in other Regions.
+m1|44|A|A B-tree index on the embedding column.
+m1|44|B|A GIN index with a full-text search configuration.
+m1|44|C|An IVFFlat index built with a list count suited to the data size.
+m1|44|D|An HNSW index with pgvector.
+m1|45|A|Increase the function timeout so initialization has more time.
+m1|45|B|Set reserved concurrency to 1 so the same environment is reused.
+m1|45|C|Provisioned concurrency with scheduled scaling just before 08:00.
+m1|45|D|Move the function code into a Lambda layer to shrink the package.
+m1|46|A|Amazon Keyspaces (for Apache Cassandra).
+m1|46|B|Amazon DocumentDB (with MongoDB compatibility).
+m1|46|C|Amazon Neptune, a graph database service.
+m1|46|D|Amazon MemoryDB, a durable Redis-compatible database.
+m1|47|A|Run a Glue crawler after the job to check the schema of the curated data.
+m1|47|B|Enable job bookmarks so the job tracks which records were already loaded.
+m1|47|C|An Evaluate Data Quality step with Completeness "order_id" > 0.95, set to fail the job on failure.
+m1|47|D|Increase the worker type so the job finishes before bad data is published.
+m1|48|A|AWS Step Functions with state machines translated from each DAG.
+m1|48|B|AWS Glue workflows built from the existing task definitions.
+m1|48|C|Amazon EventBridge Scheduler invoking each task on a cron schedule.
+m1|48|D|Amazon Managed Workflows for Apache Airflow (MWAA).
+m1|49|A|A gateway VPC endpoint for Kinesis added to the subnet route table.
+m1|49|B|An interface VPC endpoint (AWS PrivateLink) for Kinesis Data Streams.
+m1|49|C|An internet gateway with a route from the private subnet.
+m1|49|D|A site-to-site VPN connection between the VPC and the Kinesis service.
+m1|51|A|Have the source deliver multiple smaller files, or convert to Parquet, so Spark can read in parallel.
+m1|51|B|Add more workers so that the single file is split across more executors.
+m1|51|C|Switch from gzip to a different gzip compression level that can be split.
+m1|51|D|Increase the driver memory so the file can be read by the driver faster.
+m1|52|A|Move to a larger node type so the single file loads faster on one slice.
+m1|52|B|Split the data into multiple compressed files (a multiple of the slice count) and COPY from the prefix.
+m1|52|C|Load the rows with INSERT statements, which run in parallel across slices.
+m1|52|D|Disable compression encodings on the table to speed up the load.
+m1|54|A|Disable versioning on the bucket so old versions are removed.
+m1|54|B|A lifecycle rule that expires noncurrent versions after 30 days.
+m1|54|C|Enable S3 Object Lock in compliance mode on the bucket.
+m1|54|D|Enable Cross-Region Replication to keep the old versions elsewhere.
+m1|55|A|EventBridge Scheduler with the Asia/Kolkata time zone, starting the job or a state machine.
+m1|55|B|An EventBridge rule with a cron expression written in local India time.
+m1|55|C|A Lambda function that computes the offset from UTC before starting the job.
+m1|55|D|A cron job on an EC2 instance configured with the IST time zone.
+m1|56|A|Increase the DML query timeout so queued queries are not cancelled.
+m1|56|B|Add more S3 prefixes so Athena can read the tables with more parallelism.
+m1|56|C|Create an Athena capacity reservation and assign the workgroup to it.
+m1|56|D|Convert the tables to CSV so the queries need fewer resources.
+m1|57|A|s3:GetObject on lake/raw/*, s3:PutObject on lake/curated/*, and a prefix-scoped s3:ListBucket.
+m1|57|B|s3:* on all resources, so the job never fails with AccessDenied.
+m1|57|C|The AmazonS3FullAccess managed policy attached to the job role.
+m1|57|D|The AdministratorAccess managed policy attached to the job role.
+m1|60|A|SELECT store, day, AVG(daily_sales) FROM t GROUP BY store, day ORDER BY day
+m1|60|B|SELECT store, day, RANK() OVER (PARTITION BY store ORDER BY daily_sales) FROM t
+m1|60|C|SELECT store, day, SUM(daily_sales) OVER (PARTITION BY store ORDER BY day) / 7 FROM t
+m1|63|A|Amazon SageMaker Catalog in SageMaker Unified Studio.
+m1|63|B|The AWS Glue Data Catalog with Lake Formation permissions.
+m1|63|C|AWS CloudTrail with an organization trail.
+m1|63|D|AWS Config with conformance packs.
+m1|64|A|A daily Athena query over the job logs that emails the failed runs.
+m1|64|B|A Glue console check each morning by the on-call engineer.
+m1|64|C|An EventBridge rule on Glue Job State Change events (FAILED, TIMEOUT) with an SNS email target.
+m1|64|D|A CloudTrail Insights event that notifies the team on unusual Glue API calls.

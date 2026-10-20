@@ -1,0 +1,24 @@
+# Open questions / [UNVERIFIED]
+1. Retake 14-day rule: confirmed via search summary of AWS After-Testing/FAQ; page text not opened. Low risk.
+2. Pearson VUE prohibited items, desk rules, accepted IDs for India, Sunday test-centre availability, GST/taxes on fee: not fetched.
+3. Official sample question formats (Skill Builder) not accessible; exam may include only MC/MR (per guide).
+4. Glue 6.0 (Spark 4.0) existence/GA details; Glue version support/EOL policy.
+5. Timestream status (deprecated for new customers?) — outside exam scope either way.
+6. Lake Formation June 2026 S3 direct-access feature: only non-English What's New text seen.
+7. S3 Tables Iceberg v3 dates (secondary sources); S3 Vectors limits (secondary).
+8. Athena 2026 release notes read from China-region docs only.
+9. SageMaker Catalog / Unified Studio domain V1 vs V2 and IAM vs IDC domain details: secondary source only.
+10. Amazon Quick naming: exam guide says "Amazon Quick"; rename chain from secondary sources.
+11. Not yet researched: MSK, MWAA, OpenSearch, Step Functions, EventBridge Pipes, DMS, AppFlow, Keyspaces, Kinesis quotas — to verify at point of writing (Phase 3).
+12. Cheatsheet items tagged ~ (not re-fetched): Glue worker/Flex details, Redshift data sharing prerequisites/DDM/RLS, DynamoDB 400 KB/partition limits/TTL lag, S3 IA 30-day minimum and Glacier retrieval tiers, MSK details, Kinesis EFO per-consumer 2 MB/s, KMS rotation defaults, pgvector HNSW/IVF characteristics, SageMaker domain model. Phase 5 audit to verify.
+13. Kinesis on-demand scale-up rule ("2x previous peak") [UNVERIFIED].
+14. Firehose zero-buffering option and Iceberg destination [UNVERIFIED].
+15. Mock 1 / Mock 2 in the 12-day plan use Skill Builder pretest + old mocks until `practice/` is built.
+16. Firehose Iceberg destination, Step Functions integration count (200+), Glue Python shell DPU sizes, EventBridge rule cron UTC-only, Glue auto scaling versions, Bedrock batch inference details: tagged ~ / [UNVERIFIED] in guide D1.
+17. Glue 6.0 existence confirmed (Spark 4.1.1, Python 3.13) from Glue job-properties page; cheatsheet 09 updated. Earlier note that 5.1 is "current" superseded: 5.1 is the default for new jobs.
+18. D2 guide items tagged ~: Glacier retrieval tier times, DynamoDB PITR/TTL timing, Aurora replica count, MemoryDB vector search, S3 Vectors GA/limits, SageMaker Catalog details (secondary), IVFFlat characteristics, crawler incremental/classifier details, Athena Iceberg commands.
+19. Athena workgroup data-usage controls and DataBrew ruleset details: page content not retrieved; tagged ~ in D3 guide. Quick/SPICE limits, DataBrew transform count, CloudTrail 90-day event history, MSK/OpenSearch troubleshooting items tagged ~.
+20. "Athena capacity reservation 1-minute minimum" from secondary source: not confirmed by the official page; removed from limits sheet.
+21. SageMaker Unified Studio domain/domain-unit/project semantics: the fetched page only covered a short intro; details (identity modes, domain units, subscription grants) come from secondary sources -> marked (S) in guide D4 4.1/4.5. Verify in SageMaker Unified Studio admin guide if time allows.
+22. CloudTrail Lake closed to new customers from 2026-05-31 (official doc note) while exam guide v1.1 still lists skill 4.4.3 (CloudTrail Lake). Unknown whether the exam will continue to test it; keep concept-level knowledge.
+23. D4 guide items tagged ~: Parameter Store pricing/limits, Secrets Manager size, Redshift encryption-enablement process, DSSE-KMS, CloudWatch data protection policies, Config details, Clean Rooms, Control Tower guardrails.
