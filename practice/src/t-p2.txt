@@ -1,0 +1,276 @@
+@@Q 25 | MC | D2 | 2.1.1 | M | B
+A company keeps 50 TB of historical data and runs ad hoc SQL queries on it only a few times a month. It wants the lowest cost and no infrastructure to manage.
+Which solution is BEST?
+A. A provisioned Redshift cluster running continuously.
+B. Data in S3 as Parquet, queried with Amazon Athena.
+C. Amazon Aurora with a large instance.
+D. A DynamoDB table with provisioned capacity.
+@@E
+- Correct B: S3 storage is cheap and Athena charges only per data scanned when queries run.
+- A: Pays for compute continuously for rare queries.
+- C: Expensive for 50 TB analytics.
+- D: Not an ad hoc SQL analytics store.
+@@Q 26 | MC | D2 | 2.1.2 | M | C
+A read-heavy reporting workload overloads the primary Amazon Aurora PostgreSQL writer. Reports tolerate seconds of replica lag.
+What should the engineer configure?
+A. A bigger writer and route reports to it.
+B. Convert Aurora to DynamoDB.
+C. Aurora Replicas and the reader endpoint for reporting connections.
+D. Disable replication.
+@@E
+- Correct C: Aurora Replicas scale reads, and the reader endpoint load-balances connections across them.
+- A: Keeps reads on the writer.
+- B: A rewrite of the application.
+- D: Removes read scaling.
+@@Q 27 | MC | D2 | 2.1.6 | H | D
+Concurrent transactions in Amazon RDS for MySQL occasionally fail with deadlock errors.
+What is the BEST approach?
+A. Disable transactions.
+B. Increase the storage size.
+C. Move to a smaller instance.
+D. Access rows in a consistent order, keep transactions short, and retry the transaction on a deadlock error.
+@@E
+- Correct D: Consistent lock ordering and retry logic are the standard remedies.
+- A: Loses atomicity.
+- B: Does not affect lock cycles.
+- C: Does not help.
+@@Q 28 | MC | D2 | 2.1.5 | H | A
+Dashboards repeatedly aggregate data in S3 queried through Redshift Spectrum external tables, and queries are slow.
+Which feature can speed repeated queries?
+A. A materialized view over the external table, refreshed on a schedule.
+B. DISTSTYLE ALL on the external table.
+C. VACUUM on the external table.
+D. A bigger Athena workgroup.
+@@E
+- Correct A: Materialized views precompute and store results, including over external tables.
+- B: Distribution styles apply to local tables.
+- C: VACUUM applies to local tables.
+- D: Athena is not involved.
+@@Q 29 | MC | D2 | 2.2.1 | M | B
+Spark jobs on Amazon EMR must use the same table definitions that Athena and Glue use.
+What should be configured?
+A. A separate Hive metastore per cluster.
+B. EMR configured to use the AWS Glue Data Catalog as its Hive metastore.
+C. Copy schemas manually into each job.
+D. Store schemas in a text file.
+@@E
+- Correct B: The Glue Data Catalog is a Hive-compatible metastore shared across services.
+- A: Drifts apart.
+- C: Manual and error-prone.
+- D: No central governance.
+@@Q 30 | MC | D2 | 2.2.3 | M | C
+A Glue crawler runs nightly. After an upstream change, the crawler altered a production table's columns and broke downstream queries. The team wants schema changes reviewed first.
+What should be configured?
+A. Run the crawler hourly.
+B. Delete the table each night.
+C. Set the crawler's schema change policy to log changes instead of updating the table, then apply approved changes manually.
+D. Disable the Glue Data Catalog.
+@@E
+- Correct C: The "Log" option records changes without modifying the table.
+- A: More frequent changes.
+- B: Destructive.
+- D: Would break everything.
+@@Q 31 | MC | D2 | 2.3.1 | M | D
+Query results from Redshift must be exported to S3 as Parquet, partitioned by sale_date, in parallel.
+Which command should be used?
+A. COPY with FORMAT AS PARQUET.
+B. INSERT INTO s3.
+C. VACUUM.
+D. UNLOAD with FORMAT PARQUET and PARTITION BY (sale_date).
+@@E
+- Correct D: UNLOAD writes query results to S3 in parallel and supports Parquet and partitioning.
+- A: COPY loads data into Redshift.
+- B: Not valid.
+- C: Reclaims space.
+@@Q 32 | MC | D2 | 2.3.5 | H | A
+A customer requests erasure of personal data stored in an Apache Iceberg table in the S3 data lake queried by Athena.
+What is the BEST approach?
+A. Run a row-level DELETE for the customer, then expire old snapshots and remove orphaned files so deleted data is no longer retrievable.
+B. Delete only the metadata file.
+C. Wait for S3 lifecycle to remove the bucket.
+D. Disable queries for the customer.
+@@E
+- Correct A: Deleting rows creates a new snapshot; old snapshots still reference the data until they are expired and files removed.
+- B: Leaves data files and breaks the table.
+- C: Does not target the customer.
+- D: Does not delete.
+@@Q 33 | MC | D2 | 2.3.3 | M | B
+An S3 bucket accumulates abandoned incomplete multipart uploads that add storage cost, and logs older than 90 days must be removed.
+What should be configured?
+A. A bucket policy.
+B. A lifecycle configuration with an expiration rule at 90 days and an AbortIncompleteMultipartUpload rule.
+C. S3 Transfer Acceleration.
+D. S3 Inventory.
+@@E
+- Correct B: Lifecycle rules can expire objects and clean up incomplete uploads.
+- A: Policies do not delete data.
+- C: Transfer speed feature.
+- D: Reporting only.
+@@Q 34 | MC | D2 | 2.4.1 | H | C
+A DynamoDB table has PK customerId and SK orderDate. A new requirement is to query orders by orderStatus across all customers, sorted by orderDate.
+What should be added?
+A. A scan with a filter expression.
+B. A local secondary index on orderStatus.
+C. A global secondary index with partition key orderStatus and sort key orderDate.
+D. A second table copy updated by hand.
+@@E
+- Correct C: A GSI re-keys the data for a new access pattern across partitions.
+- A: Inefficient.
+- B: An LSI keeps the same partition key (customerId), so it cannot query across customers.
+- D: Manual duplication.
+@@Q 35 | MC | D2 | 2.4.4 | M | D
+Governance wants to see which upstream datasets and transformations produced a published analytics asset, across projects.
+Which capability should be used?
+A. AWS Budgets.
+B. Amazon CloudFront logs.
+C. EC2 instance metadata.
+D. Data lineage in Amazon SageMaker Catalog.
+@@E
+- Correct D: Lineage shows data movement and transformations for governed assets.
+- A: Tracks spend.
+- B: Delivery logs.
+- C: Unrelated.
+@@Q 36 | MC | D2 | 2.4.5 | M | A
+A team writes Parquet and wants fast compression and decompression with a reasonable ratio, accepting the common default.
+Which compression codec is MOST appropriate?
+A. Snappy.
+B. BZIP2.
+C. None, to avoid CPU cost.
+D. A single gzip wrapper around the whole directory.
+@@E
+- Correct A: Snappy is fast and is the widely used Parquet default.
+- B: High ratio but slow.
+- C: Larger files and more I/O.
+- D: Breaks columnar block layout and splitting.
+@@Q 37 | MR | D2 | 2.1.8 | H | A,C
+Which TWO statements about the IVF vector index type are correct? (Select TWO.)
+A. It partitions vectors into clusters (lists) and searches only the nearest clusters at query time.
+B. It can be built effectively on an empty table before any data is loaded.
+C. It generally builds faster and uses less memory than HNSW, but typically has lower recall at similar speed.
+D. It is a graph-based index while HNSW is cluster-based.
+E. It always returns exact nearest neighbors.
+@@E
+- Correct A and C: IVF is a cluster-based approximate index with lower build cost and memory than HNSW.
+- B: Cluster centroids should be built from representative data.
+- D: Reversed: HNSW is graph-based.
+- E: IVF is approximate.
+@@Q 38 | MC | D2 | 2.1.7 | M | B
+A bad write corrupted an Iceberg table. The team needs to inspect and restore the table to its state from yesterday.
+Which Iceberg capability applies?
+A. Primary key constraints.
+B. Snapshots, which enable time travel and rollback to an earlier snapshot.
+C. B-tree indexes.
+D. Foreign keys.
+@@E
+- Correct B: Iceberg keeps snapshots of table state so earlier versions can be queried or restored.
+- A: Iceberg does not enforce primary key constraints.
+- C: Iceberg uses metadata and file statistics, not B-tree indexes.
+- D: Foreign keys are not enforced.
+@@Q 39 | MC | D2 | 2.2.4 | H | A
+Athena query planning is slow because a Glue table has millions of partitions and queries filter on a few partition keys.
+What can improve planning time?
+A. Create partition indexes in the Glue Data Catalog (or use partition projection).
+B. Increase the Athena query timeout.
+C. Add an S3 lifecycle rule.
+D. Decrease the file size.
+@@E
+- Correct A: Partition indexes speed partition lookup; projection avoids catalog lookups.
+- B: Planning time is not about timeout.
+- C: Unrelated.
+- D: Small files worsen performance.
+@@Q 40 | MC | D2 | 2.1.3 | M | B
+A gaming platform needs a durable store for leaderboards using sorted sets with microsecond reads and writes.
+Which service is BEST?
+A. Amazon S3.
+B. Amazon MemoryDB.
+C. Amazon Redshift.
+D. AWS Glue.
+@@E
+- Correct B: MemoryDB provides Redis data structures such as sorted sets with durability.
+- A: Object storage.
+- C: Warehouse.
+- D: ETL service.
+@@Q 41 | MC | D2 | 2.4.2 | H | C
+An upstream system changed a column from integer to string, and the Glue job now fails or produces mixed types.
+What is the BEST way to handle the changing data characteristic?
+A. Ignore the failures.
+B. Delete the column from the target.
+C. Use ResolveChoice (for example cast to string) in the Glue DynamicFrame and manage schema versions with the Schema Registry or catalog.
+D. Disable the job.
+@@E
+- Correct C: DynamicFrames represent mixed types as choices that can be resolved explicitly.
+- A: Loses data quality.
+- B: Loses data.
+- D: Stops the pipeline.
+@@Q 42 | MC | D2 | 2.3.6 | M | D
+A DynamoDB-based application needs multi-Region active-active writes with replication measured in seconds and Regional failover.
+Which feature should be used?
+A. DynamoDB Streams alone.
+B. On-demand backups.
+C. PITR.
+D. DynamoDB global tables.
+@@E
+- Correct D: Global tables replicate across Regions and accept writes in each Region.
+- A: A change log, not replication.
+- B: Point-in-time copies.
+- C: Restore within one Region.
+@@Q 43 | MC | D3 | 3.1.3 | M | A
+A script using the AWS SDK must list all objects in a bucket with more than 1,000 keys.
+What should the developer do?
+A. Use the SDK paginator (or loop on the continuation token).
+B. Call list_objects_v2 once.
+C. Increase MaxKeys above 1,000.
+D. Use a larger instance.
+@@E
+- Correct A: List calls return up to 1,000 keys per page; paginators iterate over all pages.
+- B: Returns only the first page.
+- C: 1,000 is the maximum per response.
+- D: Does not change paging.
+@@Q 44 | MC | D3 | 3.1.6 | M | C
+Analysts without coding skills must standardize date formats and remove duplicates in files in S3 and reuse the steps on new files.
+Which service is BEST?
+A. Amazon EMR.
+B. AWS Lambda.
+C. AWS Glue DataBrew with a recipe.
+D. Amazon Kinesis.
+@@E
+- Correct C: DataBrew offers visual transformations saved as reusable recipes.
+- A: Needs engineers.
+- B: Requires code.
+- D: Streaming.
+@@Q 45 | MC | D3 | 3.2.5 | M | D
+A development team runs unpredictable, intermittent Redshift queries and wants to avoid paying for idle capacity.
+Which option is BEST?
+A. A large provisioned cluster running 24/7.
+B. Reserved instances.
+C. A single node cluster always on.
+D. Amazon Redshift Serverless.
+@@E
+- Correct D: Serverless scales with demand and bills for usage.
+- A: A 24/7 provisioned cluster bills for idle time.
+- B: Reserved instances commit to capacity regardless of use.
+- C: An always-on single node still bills while idle and lacks elasticity.
+@@Q 46 | MC | D3 | 3.3.1 | M | A
+Auditors need application logs from CloudWatch Logs delivered to S3 for long-term, low-cost querying.
+What should be done?
+A. Export logs to S3 (an export task or a subscription filter through Firehose) and query with Athena.
+B. Take screenshots.
+C. Delete older logs.
+D. Stop logging.
+@@E
+- Correct A: Exporting to S3 gives cheap retention and SQL access through Athena.
+- B: Not auditable.
+- C: Loses evidence.
+- D: Loses evidence.
+@@Q 47 | MC | D3 | 3.3.2 | M | B
+Security requires a record of connections, user changes, and queries run on a Redshift cluster.
+What should be enabled?
+A. Concurrency scaling.
+B. Redshift audit logging to S3 or CloudWatch Logs (and the enable_user_activity_logging parameter for query text).
+C. Elastic resize.
+D. Spectrum.
+@@E
+- Correct B: Audit logs capture connections, user activity, and queries.
+- A: Performance feature.
+- C: Resizing.
+- D: Queries S3.

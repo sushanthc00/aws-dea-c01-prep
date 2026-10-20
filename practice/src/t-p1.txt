@@ -1,0 +1,286 @@
+@@Q 1 | MC | D1 | 1.1.8 | M | B
+A partner's database accepts connections only from allow-listed public IP addresses. An AWS Glue job running in a private subnet must connect to it, and the company must give the partner a stable IP address.
+What should the data engineer configure?
+A. An S3 gateway endpoint.
+B. A NAT gateway with an Elastic IP address in a public subnet, routed from the private subnet; give the partner that Elastic IP.
+C. An interface VPC endpoint for AWS Glue.
+D. A Route 53 private hosted zone.
+@@E
+- Correct B: Outbound traffic from the private subnet leaves through the NAT gateway with a fixed Elastic IP, which the partner can allow-list.
+- A: Gateway endpoints reach S3 only.
+- C: Provides private access to the Glue API, not outbound internet with a fixed IP.
+- D: DNS does not provide a source IP.
+@@Q 2 | MC | D1 | 1.1.12 | M | D
+A stream of payment events may contain duplicates arriving up to 10 minutes apart. The pipeline must discard duplicates in real time.
+Which characteristic does the processing require?
+A. Stateless processing, because each event is independent.
+B. Batch processing once per day.
+C. Only encryption in transit.
+D. Stateful processing that remembers recently seen event IDs, such as Apache Flink with keyed state.
+@@E
+- Correct D: Deduplication needs state kept across events within a time window.
+- A: Stateless logic cannot know whether an ID was seen before.
+- B: Not real time.
+- C: Unrelated.
+@@Q 3 | MC | D1 | 1.2.9 | M | A
+A company collects JSON clickstreams, CSV exports, PDF documents, and images. The schemas vary and change often. Which approach handles this variety MOST flexibly?
+A. Land raw data in S3 and apply schema-on-read with the Glue Data Catalog and query engines, using Glue DynamicFrames for transformation.
+B. Force all data into one relational schema before ingestion.
+C. Store everything in a single DynamoDB table.
+D. Reject any file that does not match a fixed schema.
+@@E
+- Correct A: A data lake on S3 with schema-on-read handles structured, semi-structured, and unstructured data.
+- B: Rigid and breaks with schema changes.
+- C: Poor fit for documents, images, and analytics.
+- D: Loses data.
+@@Q 4 | MC | D1 | 1.3.4 | E | C
+When a Step Functions workflow fails, an on-call team must receive both an email and an SMS.
+What is the simplest approach?
+A. Write failures to a DynamoDB table.
+B. Poll CloudWatch Logs by hand.
+C. Send a message to an Amazon SNS topic that has email and SMS subscriptions.
+D. Send a message to an SQS queue.
+@@E
+- Correct C: SNS fans out to multiple protocols including email and SMS.
+- A: No notification.
+- B: Manual.
+- D: Queues do not notify people.
+@@Q 5 | MC | D1 | 1.1.3 | H | A
+An AWS DMS full load of a 3 TB database with several very large tables is taking too long. Which setting change helps MOST?
+A. Use table mapping with parallel load for large tables (partitioned loads) and increase the number of tables loaded in parallel.
+B. Switch the target to a smaller instance.
+C. Disable CDC after the load.
+D. Load tables in alphabetical order.
+@@E
+- Correct A: Parallel load splits big tables into segments loaded concurrently; more parallel subtasks use available capacity.
+- B: Slows the migration.
+- C: Does not speed up the full load.
+- D: Order does not help throughput.
+@@Q 6 | MC | D1 | 1.1.5 | M | B
+Each night a Glue crawler must finish before a Glue ETL job starts, and both should be scheduled together with minimal setup, inside Glue.
+What should be used?
+A. Two independent schedules set 30 minutes apart.
+B. A Glue workflow with a scheduled start trigger, then a conditional trigger that starts the job when the crawler succeeds.
+C. A Lambda function that sleeps.
+D. An S3 lifecycle rule.
+@@E
+- Correct B: Workflows chain crawlers and jobs with conditional triggers on success.
+- A: Brittle timing that breaks if the crawler runs long.
+- C: Wasteful and fragile.
+- D: Unrelated.
+@@Q 7 | MC | D1 | 1.2.1 | M | C
+A company already runs Amazon EKS for several applications. It wants to run Spark jobs on the same cluster, sharing compute to reduce cost.
+Which option is BEST?
+A. AWS Glue.
+B. A dedicated EMR cluster on EC2.
+C. Amazon EMR on EKS.
+D. AWS Lambda.
+@@E
+- Correct C: EMR on EKS runs Spark jobs as pods on existing Kubernetes capacity.
+- A: Runs on Glue-managed resources, not the EKS cluster.
+- B: A separate cluster, not shared.
+- D: Not suitable for Spark.
+@@Q 8 | MC | D1 | 1.2.7 | H | D
+A Glue job writing hundreds of thousands of small objects to a single S3 prefix intermittently fails with HTTP 503 Slow Down errors.
+What is the BEST remediation?
+A. Increase the number of workers.
+B. Disable S3 encryption.
+C. Move the bucket to another Region.
+D. Write to more prefixes (for example by partitioning output), reduce the number of small files, and use retries with exponential backoff.
+@@E
+- Correct D: S3 request rates scale per prefix (3,500 writes and 5,500 reads per second); spreading keys and reducing request count addresses throttling.
+- A: More workers increase request pressure.
+- B: Not a cause.
+- C: Does not address the cause.
+@@Q 9 | MC | D1 | 1.2.8 | M | B
+A mobile app needs millisecond key lookups of device profiles at high request volume through a REST API, with no servers to manage.
+Which architecture is BEST?
+A. API Gateway with an EC2 fleet and RDS.
+B. API Gateway with a Lambda function reading Amazon DynamoDB.
+C. An Athena query per request.
+D. A Redshift query per request.
+@@E
+- Correct B: Serverless API with a key-value store gives low-latency lookups.
+- A: Servers to manage.
+- C: Seconds per query and cost per scan.
+- D: Not designed for high-concurrency key lookups.
+@@Q 10 | MC | D1 | 1.3.2 | M | A
+A Step Functions task that calls a flaky API occasionally fails. The workflow should retry up to 3 times with increasing waits and then take a fallback branch.
+Which feature set achieves this?
+A. Retry with IntervalSeconds, BackoffRate, and MaxAttempts, followed by a Catch that routes to the fallback state.
+B. A Parallel state.
+C. A Pass state.
+D. A Wait state only.
+@@E
+- Correct A: Retry configures attempts and exponential backoff; Catch handles the final failure.
+- B: Runs branches concurrently.
+- C: Passes input along.
+- D: Only delays.
+@@Q 11 | MC | D1 | 1.3.3 | H | C
+A workflow must pause until a manager approves a data load, which may take days, then continue. The solution must be serverless.
+Which Step Functions capability should be used?
+A. An Express workflow with a long Wait.
+B. A Map state.
+C. A Standard workflow task with the wait-for-callback pattern (task token).
+D. A Choice state.
+@@E
+- Correct C: Standard workflows run up to a year and support callback tokens for human approval.
+- A: Express workflows end after 5 minutes.
+- B: Iterates over items.
+- D: Branches on data.
+@@Q 12 | MR | D1 | 1.4.1 | H | B,D
+A Lambda function inserts records into a database and is slow and costly. Which TWO changes reduce its runtime? (Select TWO.)
+A. Create a new database connection inside the handler for every record.
+B. Initialize SDK and database clients outside the handler so execution environments reuse them.
+C. Insert records one at a time.
+D. Insert records in batches.
+E. Reduce memory to the minimum.
+@@E
+- Correct B and D: Reusing connections and batching writes cut per-invocation overhead.
+- A: Connection setup per record is slow.
+- C: Single inserts add round trips.
+- E: Lower memory also lowers CPU and can lengthen runtime.
+@@Q 13 | MC | D1 | 1.4.4 | M | D
+A team wants to unit test PySpark transformation logic before deploying it to AWS Glue, without running full jobs for each change.
+What is the BEST practice?
+A. Test only in production.
+B. Skip tests and monitor failures.
+C. Run the full 2 TB job after every edit.
+D. Factor logic into pure functions, run pytest against small sample data locally or in CI (for example with the Glue Docker image), and run it in a pipeline.
+@@E
+- Correct D: Small fast tests in CI catch defects early.
+- A: Risky.
+- B: Reactive.
+- C: Slow and costly.
+@@Q 14 | MC | D1 | 1.4.5 | M | A
+A team must deploy the same Glue job, IAM role, and S3 bucket to dev, test, and prod with only parameter differences.
+Which approach is BEST?
+A. One CloudFormation or CDK definition parameterized per environment.
+B. Manual console creation in each account.
+C. Separate hand-written scripts per environment with copy/paste.
+D. A spreadsheet of steps.
+@@E
+- Correct A: IaC gives repeatable, reviewable deployments with parameters.
+- B: Drift-prone.
+- C: Divergence risk.
+- D: Manual.
+@@Q 15 | MC | D1 | 1.4.10 | M | B
+A Spark join between a 2 TB table and a 50 MB lookup table creates a huge shuffle and runs slowly.
+What is the BEST optimization?
+A. Add more shuffle partitions only.
+B. Broadcast the small lookup table to all executors.
+C. Convert both to CSV.
+D. Run the job on one node.
+@@E
+- Correct B: Broadcast joins avoid shuffling the large table.
+- A: Does not remove the shuffle.
+- C: Slower.
+- D: Removes parallelism.
+@@Q 16 | MC | D1 | 1.1.10 | M | D
+The same clickstream in Kinesis Data Streams must be archived to S3 and also processed in real time by a Flink application.
+What is the BEST approach?
+A. Duplicate producers to write to two streams.
+B. Batch export the stream nightly.
+C. Have Flink write to S3 and Firehose both.
+D. Attach a Firehose delivery stream to the stream for S3 archival and run the Flink application as another consumer.
+@@E
+- Correct D: Multiple consumers can read the same stream; Firehose handles archival with no code.
+- A: Extra producer complexity.
+- B: Not real time.
+- C: Adds unnecessary coupling.
+@@Q 17 | MC | D1 | 1.1.1 | M | B
+Item-level changes in a DynamoDB table must be captured continuously and landed in S3 with the LEAST custom code.
+Which design is BEST?
+A. A Lambda function scanning the table every minute.
+B. Send table changes to Kinesis Data Streams (the DynamoDB Kinesis destination) and deliver them to S3 with Amazon Data Firehose.
+C. Export the whole table every hour.
+D. Query the table with Athena.
+@@E
+- Correct B: DynamoDB can stream changes to Kinesis and Firehose delivers them to S3 without code.
+- A: Expensive and misses intermediate changes.
+- C: Coarse and heavy.
+- D: Athena does not query DynamoDB directly this way for change capture.
+@@Q 18 | MC | D1 | 1.1.2 | M | C
+A company must copy 5 TB nightly from an on-premises NFS server to S3 on a schedule, with integrity verification and bandwidth control.
+Which service is BEST?
+A. AWS Snowball Edge.
+B. AWS Transfer Family.
+C. AWS DataSync.
+D. AWS DMS.
+@@E
+- Correct C: DataSync schedules transfers, verifies data, and controls bandwidth.
+- A: Offline appliance for one-time bulk moves.
+- B: Provides SFTP endpoints for partners.
+- D: Database replication.
+@@Q 19 | MC | D1 | 1.2.4 | M | A
+A Glue Spark job runs with a fixed 50 workers, but most of its stages use few workers, so cost is high.
+What should the engineer do?
+A. Enable Glue auto scaling with a maximum worker count so workers are added only when needed.
+B. Increase workers to 100.
+C. Move to Python shell.
+D. Disable bookmarks.
+@@E
+- Correct A: Auto scaling matches workers to workload and cuts idle spend.
+- B: Increases cost.
+- C: Loses Spark.
+- D: Unrelated.
+@@Q 20 | MC | D1 | 1.2.6 | M | D
+A pipeline writes high-volume events row by row, expects the schema to evolve, and downstream consumers read whole records.
+Which file format is MOST suitable?
+A. CSV.
+B. Parquet only.
+C. Plain text.
+D. Apache Avro.
+@@E
+- Correct D: Avro is row oriented, embeds its schema, and handles schema evolution well for write-heavy streaming.
+- A: No schema or types.
+- B: Columnar, better for analytics reads.
+- C: No structure.
+@@Q 21 | MR | D1 | 1.3.1 | M | A,C
+Which TWO situations favor Amazon MWAA over AWS Step Functions? (Select TWO.)
+A. The team already has many Apache Airflow DAGs to migrate.
+B. The workflow is a short event-driven serverless chain with minimal cost at idle.
+C. The team needs Airflow's operator ecosystem and Python-defined DAGs with rich scheduling and backfills.
+D. The workflow needs per-state-transition pricing.
+E. The workflow must be fully serverless with no environment to size.
+@@E
+- Correct A and C: MWAA fits existing Airflow code and Airflow features.
+- B: Step Functions suits this better.
+- D: That is a Step Functions pricing model.
+- E: MWAA environments have a size class and run continuously.
+@@Q 22 | MC | D1 | 1.1.9 | M | B
+A nightly ETL job reads directly from a production Amazon RDS database and slows down customer-facing queries.
+What is the BEST way to reduce impact?
+A. Increase the ETL job's workers.
+B. Read from a read replica (or export a snapshot to S3 and process the export).
+C. Run the job during business hours.
+D. Disable the database's backups.
+@@E
+- Correct B: Offloading reads to a replica or snapshot export protects the primary.
+- A: More parallel reads add load.
+- C: Worsens contention.
+- D: Does not help and is unsafe.
+@@Q 23 | MR | D1 | 1.1.6 | E | A,D
+Which TWO are valid direct destinations for Amazon S3 event notifications? (Select TWO.)
+A. AWS Lambda.
+B. AWS Glue job.
+C. Amazon Redshift.
+D. Amazon SQS.
+E. AWS Direct Connect.
+@@E
+- Correct A and D: S3 can notify Lambda, SQS, SNS, and EventBridge.
+- B: Start Glue through EventBridge or Lambda, not directly.
+- C: Not a destination.
+- E: Not a destination.
+@@Q 24 | MC | D1 | 1.4.7 | M | C
+A Lambda function must unzip an 8 GB archive during processing.
+What should be configured?
+A. Increase the memory to the maximum only.
+B. Reduce the timeout.
+C. Increase the function's ephemeral storage (/tmp) up to 10,240 MB.
+D. Place the archive in an environment variable.
+@@E
+- Correct C: Ephemeral storage is configurable up to 10,240 MB.
+- A: Memory does not change /tmp size.
+- B: Irrelevant.
+- D: Environment variables are limited to 4 KB.

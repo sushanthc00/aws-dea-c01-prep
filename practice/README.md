@@ -1,5 +1,5 @@
 # Practice material (original questions, exam guide v1.1 aligned)
-Status 2026-10-20: **Mock 1 and Mock 2 done (2 × 65 questions)**. Topic sets (70 questions), error-log template and flashcards: pending (Phase 4.3 rest, 4.4).
+Status 2026-10-20: **Complete set: Mock 1 + Mock 2 (130 Qs), topic sets (70 Qs), error log template, flashcards (Anki CSV).** Total 200 Qs.
 
 | Path | Content |
 |---|---|
@@ -15,3 +15,6 @@ Composition per mock: 65 Qs = D1 22 · D2 17 · D3 14 · D4 12 (official weights
 Difficulty tags are my estimate (E/M/H). Questions are original scenario items written from the exam guide skills and cheatsheets — nothing taken from real exams.
 
 **Caveats (honest status):** first-draft; not yet independently fact-checked (Phase 5). If a question conflicts with the official AWS docs or Skill Builder, trust the docs and tell me so it goes in `docs/open-questions.md`. Mock questions are single-sentence-qualifier style and somewhat easier than the real exam's longer stems; use the Skill Builder Official Pretest as the harder benchmark.
+| `topic-sets/part-{1,2,3}-{questions,answers}.md` | 70 Qs by domain: part 1 = D1 (Q1-24), part 2 = D2 (Q25-42) + D3 (Q43-47), part 3 = D3 (Q48-57) + D4 (Q58-70) |
+| `error-log-template.md` | copy to error-log.md |
+| `flashcards.csv` | Anki import: File > Import, comma separator, fields Front/Back/Tags |
